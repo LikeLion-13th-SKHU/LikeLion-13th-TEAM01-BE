@@ -34,7 +34,27 @@ public class Member {
     @Column(name = "role", nullable = false)
     private Role role;
 
+    @Enumerated(EnumType.STRING)
+    private UserType userType; // GENERAL, ORGANIZER, OWNER
+
+    @Enumerated(EnumType.STRING)
+    private ApprovalStatus approvalStatus; // PENDING, APPROVED, REJECTED
+
+    private String businessLicenseUrl; // 사업자등록증 이미지 경로
+
     private String refreshToken;
+
+    public void changeUserType(UserType userType, String businessLicenseUrl) {
+        this.userType = userType;
+        this.businessLicenseUrl = businessLicenseUrl;
+
+        if (userType == UserType.GENERAL) {
+            this.approvalStatus = ApprovalStatus.APPROVED; // GENERAL은 바로 승인
+        } else {
+            this.approvalStatus = ApprovalStatus.PENDING;  // 나머지는 승인 대기
+        }
+    }
+
 
     @Builder
     public Member(String name, String email, String password, Long kakaoId, Role role, String pictureUrl) {
@@ -44,6 +64,14 @@ public class Member {
         this.kakaoId = kakaoId;
         this.role = role;
         this.pictureUrl = pictureUrl;
+    }
+
+    public void approveBusiness() {
+        this.approvalStatus = ApprovalStatus.APPROVED;
+    }
+
+    public void rejectBusiness() {
+        this.approvalStatus = ApprovalStatus.REJECTED;
     }
 
     public void updateRefreshToken(String refreshToken) {
