@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,17 +26,17 @@ public class Event {
     private String eventName;
 
     @Column(name = "event_start_date", nullable = false)
-    private String eventStartDate;
+    private LocalDate eventStartDate;
 
     @Column(name = "event_end_date", nullable = false)
-    private String eventEndDate;
+    private LocalDate eventEndDate;
 
     @Column(name = "picture_url")
     private String pictureUrl;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "area", nullable = false)
-    private Area area;  //Seoul, Incheon, Busan, Daegu
+    private Area area;
 
     @Column(name = "content", length = 300)
     private String content;
@@ -44,7 +45,7 @@ public class Event {
     private List<Bookmark> bookmarks = new ArrayList<>();
 
     @Builder
-    private Event(String eventName, String eventStartDate, String eventEndDate, String pictureUrl, Area area, String content) {
+    private Event(String eventName, LocalDate eventStartDate, LocalDate eventEndDate, String pictureUrl, Area area, String content) {
         this.eventName = eventName;
         this.eventStartDate = eventStartDate;
         this.eventEndDate = eventEndDate;
