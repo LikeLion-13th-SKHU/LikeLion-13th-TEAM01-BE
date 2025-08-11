@@ -78,4 +78,8 @@ public class Member {
         this.refreshToken = refreshToken;
     }
 
+    public void updateName(String name) {
+        this.name = name;
+    }
+
 }
