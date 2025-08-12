@@ -29,6 +29,10 @@ public class RspTemplate<T> {
         return new RspTemplate<>(status.value(), message, data);
     }
 
+    public static <T> RspTemplate<T> ok(T data) {
+        return new RspTemplate<>(HttpStatus.OK, "성공", data);
+    }
+
     public static RspTemplate error(Error error){
         return new RspTemplate<>(error.getErrorCode(), error.getMessage());
     }
