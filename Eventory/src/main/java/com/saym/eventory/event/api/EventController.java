@@ -2,6 +2,7 @@ package com.saym.eventory.event.api;
 
 
 import com.saym.eventory.common.template.RspTemplate;
+import com.saym.eventory.event.api.dto.response.EventDetailResponseDto;
 import com.saym.eventory.event.api.dto.response.EventInfoResponseDto;
 import com.saym.eventory.event.application.EventService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -33,4 +34,20 @@ public class EventController {
 
         return ResponseEntity.ok(response);
     }
+
+    // 행사 상세정보 조회 (내용, 주소)
+    @GetMapping("/detail/{eventId}")
+    @Operation(method = "GET", summary = "행사 상세정보 조회", description = "행사의 상세정보를 조회합니다.")
+    public ResponseEntity<RspTemplate<EventDetailResponseDto>> getEventDetail(@PathVariable("eventId") Long eventId) {
+        EventDetailResponseDto eventDetailResponseDto = eventService.getEventDetail(eventId);
+
+        RspTemplate<EventDetailResponseDto> response = RspTemplate.success(
+                HttpStatus.OK,
+                "행사 상세정보 조회 성공",
+                eventDetailResponseDto
+        );
+
+        return ResponseEntity.ok(response);
+    }
+
 }

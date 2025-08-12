@@ -1,5 +1,6 @@
 package com.saym.eventory.event.application;
 
+import com.saym.eventory.event.api.dto.response.EventDetailResponseDto;
 import com.saym.eventory.event.api.dto.response.EventInfoResponseDto;
 import com.saym.eventory.event.domain.repository.EventRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,5 +27,25 @@ public class EventService {
                 ))
                 .toList();
         };
+
+    // 행사 상세 정보(내용, 주소) 조회
+    public EventDetailResponseDto getEventDetail(Long eventId) {
+        return eventRepository.findById(eventId)
+                .map(event -> new EventDetailResponseDto(
+                        event.getEventId(),
+                        event.getEventName(),
+                        event.getEventStartDate(),
+                        event.getEventEndDate(),
+                        event.getPictureUrl(),
+                        event.getContent(),
+                        event.getAddress()
+                ))
+                .orElseThrow(() -> new RuntimeException("행사를 찾을 수 없습니다."));
     }
+
+
+}
+
+
+
 

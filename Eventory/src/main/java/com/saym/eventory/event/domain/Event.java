@@ -41,17 +41,21 @@ public class Event {
     @Column(name = "content", length = 300)
     private String content;
 
+    @Column(name = "address", length = 100)
+    private String address;
+
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL,orphanRemoval = true)
     private List<Bookmark> bookmarks = new ArrayList<>();
 
     @Builder
-    private Event(String eventName, LocalDate eventStartDate, LocalDate eventEndDate, String pictureUrl, Area area, String content) {
+    private Event(String eventName, LocalDate eventStartDate, LocalDate eventEndDate, String pictureUrl, Area area, String content, String address) {
         this.eventName = eventName;
         this.eventStartDate = eventStartDate;
         this.eventEndDate = eventEndDate;
         this.pictureUrl = pictureUrl;
         this.area = area;
         this.content = content;
+        this.address = address;
     }
 
 
