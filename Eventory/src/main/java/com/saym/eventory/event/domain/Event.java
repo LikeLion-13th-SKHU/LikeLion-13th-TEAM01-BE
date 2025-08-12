@@ -1,6 +1,7 @@
 package com.saym.eventory.event.domain;
 
 import com.saym.eventory.bookmark.domain.Bookmark;
+import com.saym.eventory.event.api.dto.request.EventRequestDto;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -10,7 +11,6 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-
 
 @Entity
 @Getter
@@ -54,6 +54,12 @@ public class Event {
         this.content = content;
     }
 
-
-
+    public void updateEvent(EventRequestDto eventRequestDto) {
+        this.eventName = eventRequestDto.eventName();
+        this.eventStartDate = eventRequestDto.eventStartDate();
+        this.eventEndDate = eventRequestDto.eventEndDate();
+        this.pictureUrl = eventRequestDto.pictureUrl();
+        this.area = eventRequestDto.area();
+        this.content = eventRequestDto.content();
+    }
 }
