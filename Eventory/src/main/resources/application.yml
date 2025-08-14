@@ -46,3 +46,9 @@ jwt:
   access-token-validity-in-milliseconds: ${jwt.access-token-validity-in-milliseconds}
   refresh-token-validity-in-milliseconds: ${jwt.refresh-token-validity-in-milliseconds}
 
+ai:
+  base-url: ${ai.base-url}
+  chat-path: ${ai.chat-path}
+  timeout:
+    connect-ms: ${ai.timeout.connect-ms}
+    read-ms: ${ai.timeout.read-ms}
