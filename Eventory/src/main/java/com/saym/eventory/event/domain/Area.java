@@ -17,5 +17,15 @@ public enum Area {
     JEONNAM,
     GYEONGBUK,
     GYEONGNAM,
-    JEJU
+    JEJU;
+
+    // 대소문자 구분 없이 enum 반환
+    public static Area fromString(String value) {
+        if (value == null) return null;
+
+        return java.util.Arrays.stream(Area.values())
+                .filter(a -> a.name().equalsIgnoreCase(value))
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException("Unknown area: " + value));
+    }
 }

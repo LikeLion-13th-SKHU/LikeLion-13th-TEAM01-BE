@@ -1,6 +1,7 @@
 package com.saym.eventory.event.api;
 
 import com.saym.eventory.common.template.RspTemplate;
+import com.saym.eventory.event.api.dto.request.EventRequestDto;
 import com.saym.eventory.event.api.dto.response.EventDetailResponseDto;
 import com.saym.eventory.event.api.dto.response.EventInfoResponseDto;
 import com.saym.eventory.event.application.EventService;
@@ -91,5 +92,28 @@ public class EventController {
                 bookmarks
         );
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping
+    @Operation(summary = "행사 등록", description = "행사를 등록합니다.")
+    public ResponseEntity<RspTemplate<Long>> createEvent (@RequestBody EventRequestDto eventRequestDto){
+        Long id = eventService.createEvent(eventRequestDto);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(RspTemplate.success(HttpStatus.CREATED, "행사 생성 성공", id));
+    }
+
+    @PutMapping("/{eventId}")
+    @Operation(summary = "행사 수정", description = "행사 정보를 수정합니다.")
+    public ResponseEntity<RspTemplate<Void>> updateEvent (@PathVariable Long eventId, @RequestBody EventRequestDto
+            eventRequestDto){
+        eventService.updateEvent(eventId, eventRequestDto);
+        return ResponseEntity.ok(RspTemplate.success(HttpStatus.OK, "행사 수정 성공", null));
+    }
+
+    @DeleteMapping("/{eventId}")
+    @Operation(summary = "행사 삭제", description = "행사를 삭제합니다.")
+    public ResponseEntity<RspTemplate<Void>> deleteEvent (@PathVariable Long eventId){
+        eventService.deleteEvent(eventId);
+        return ResponseEntity.ok(RspTemplate.success(HttpStatus.OK, "행사 삭제 성공", null));
     }
 }
