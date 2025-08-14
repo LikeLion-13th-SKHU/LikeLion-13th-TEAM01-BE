@@ -1,0 +1,74 @@
+package com.saym.eventory.event.domain;
+
+import com.saym.eventory.bookmark.domain.Bookmark;
+import com.saym.eventory.event.api.dto.request.EventRequestDto;
+import com.saym.eventory.member.domain.Member;
+import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class Event {
+
+    @Id
+    @Column(name = "event_id")
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long eventId;
+
+    @Column(name = "event_name", nullable = false)
+    private String eventName;
+
+    @Column(name = "event_start_date", nullable = false)
+    private LocalDate eventStartDate;
+
+    @Column(name = "event_end_date", nullable = false)
+    private LocalDate eventEndDate;
+
+    @Column(name = "picture_url")
+    private String pictureUrl;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "area", nullable = false)
+    private Area area;
+
+    @Column(name = "content", length = 300)
+    private String content;
+
+    @Column(name = "address", length = 100)
+    private String address;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id", nullable = false)
+    private Member member;
+
+    @OneToMany(mappedBy = "event", cascade = CascadeType.ALL,orphanRemoval = true)
+    private List<Bookmark> bookmarks = new ArrayList<>();
+
+    @Builder
+    private Event(String eventName, LocalDate eventStartDate, LocalDate eventEndDate, String pictureUrl, Area area, String content, String address) {
+        this.eventName = eventName;
+        this.eventStartDate = eventStartDate;
+        this.eventEndDate = eventEndDate;
+        this.pictureUrl = pictureUrl;
+        this.area = area;
+        this.content = content;
+        this.address = address;
+    }
+
+    public void updateEvent(EventRequestDto eventRequestDto) {
+        this.eventName = eventRequestDto.eventName();
+        this.eventStartDate = eventRequestDto.eventStartDate();
+        this.eventEndDate = eventRequestDto.eventEndDate();
+        this.pictureUrl = eventRequestDto.pictureUrl();
+        this.area = eventRequestDto.area();
+        this.content = eventRequestDto.content();
+    }
+}
