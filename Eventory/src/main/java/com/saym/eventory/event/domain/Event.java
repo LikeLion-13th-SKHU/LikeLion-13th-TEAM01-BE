@@ -1,6 +1,8 @@
 package com.saym.eventory.event.domain;
 
 import com.saym.eventory.bookmark.domain.Bookmark;
+import com.saym.eventory.event.api.dto.request.EventRequestDto;
+import com.saym.eventory.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -10,7 +12,6 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-
 
 @Entity
 @Getter
@@ -41,6 +42,10 @@ public class Event {
     @Column(name = "content", length = 300)
     private String content;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id", nullable = false)
+    private Member member;
+
     @OneToMany(mappedBy = "event", cascade = CascadeType.ALL,orphanRemoval = true)
     private List<Bookmark> bookmarks = new ArrayList<>();
 
@@ -54,6 +59,12 @@ public class Event {
         this.content = content;
     }
 
-
-
+    public void updateEvent(EventRequestDto eventRequestDto) {
+        this.eventName = eventRequestDto.eventName();
+        this.eventStartDate = eventRequestDto.eventStartDate();
+        this.eventEndDate = eventRequestDto.eventEndDate();
+        this.pictureUrl = eventRequestDto.pictureUrl();
+        this.area = eventRequestDto.area();
+        this.content = eventRequestDto.content();
+    }
 }
