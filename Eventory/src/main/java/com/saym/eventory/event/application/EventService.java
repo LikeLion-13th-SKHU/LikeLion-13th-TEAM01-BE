@@ -5,6 +5,7 @@ import com.saym.eventory.bookmark.domain.Bookmark;
 import com.saym.eventory.bookmark.domain.repository.BookmarkRepository;
 import com.saym.eventory.event.api.dto.response.EventDetailResponseDto;
 import com.saym.eventory.event.api.dto.response.EventInfoResponseDto;
+import com.saym.eventory.event.domain.Area;
 import com.saym.eventory.event.domain.Event;
 import com.saym.eventory.event.domain.repository.EventRepository;
 import com.saym.eventory.member.domain.Member;
@@ -15,6 +16,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -118,4 +121,10 @@ public class EventService {
                 .orElseThrow(() -> new EntityNotFoundException("행사를 찾을 수 없습니다."));
         eventRepository.delete(event);
     }
+
+    // 필터 기능
+    public List<Event> getFilteredEvents(List<Area> areas, LocalDate startDate, LocalDate endDate) {
+        return eventRepository.findByFilters(areas, startDate, endDate);
+    }
+
 }
