@@ -40,7 +40,8 @@ public class SwaggerConfig {
 
     private List<Server> servers() {
         return List.of(new Server()
-                .url("https://book-hub.store:8080")
+                .url("https://book-hub.store")
+                //.url("http://localhost:8080")
                 .description("Configured Server")
         );
     }
