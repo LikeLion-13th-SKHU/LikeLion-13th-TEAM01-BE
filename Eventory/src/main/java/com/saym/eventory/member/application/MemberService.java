@@ -2,6 +2,7 @@ package com.saym.eventory.member.application;
 
 import com.saym.eventory.common.exception.CustomException;
 import com.saym.eventory.common.exception.Error;
+import com.saym.eventory.global.s3.service.S3Service;
 import com.saym.eventory.member.api.dto.request.ChangeUserTypeRequestDto;
 import com.saym.eventory.member.api.dto.request.UpdateMemberInfoRequestDto;
 import com.saym.eventory.member.api.dto.response.MemberResponseDto;
@@ -22,6 +23,7 @@ import java.security.Principal;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final S3Service s3Service;
 
     private Member getMemberById(Long id) {
         return memberRepository.findById(id)
@@ -60,14 +62,23 @@ public class MemberService {
         UserType requestedType = dto.userType();
 
         if (requestedType == UserType.GENERAL) {
-            // 사진 없이 바로 변경 (승인 처리까지 한번에)
+            // 사진 없이 바로 변경
             member.changeUserType(UserType.GENERAL, null);
         } else {
             // ORGANIZER, OWNER는 사업자등록증 이미지 필수
-            if (dto.businessLicenseUrl() == null || dto.businessLicenseUrl().isEmpty()) {
+            if (dto.businessLicenseFile() == null || dto.businessLicenseFile().isEmpty()) {
                 throw new CustomException(Error.BUSINESS_LICENSE_REQUIRED, Error.BUSINESS_LICENSE_REQUIRED.getMessage());
             }
-            member.changeUserType(requestedType, dto.businessLicenseUrl());
+
+            try {
+                // S3 업로드 후 URL 저장
+                String uploadedUrl = s3Service.uploadFile(dto.businessLicenseFile());
+                log.info("파일 업로드 성공적. URL={}", uploadedUrl);
+                member.changeUserType(requestedType, uploadedUrl);
+            } catch (Exception e) {
+                log.error("파일 업로드 실패 member {}: {}", member.getId(), e.getMessage(), e);
+                throw new CustomException(Error.FILE_UPLOAD_FAILED, Error.FILE_UPLOAD_FAILED.getMessage());
+            }
         }
 
         return toResponse(member);
