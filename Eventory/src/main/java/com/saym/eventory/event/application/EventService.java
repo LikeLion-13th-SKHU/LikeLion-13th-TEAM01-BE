@@ -124,6 +124,11 @@ public class EventService {
 
     // 필터 기능
     public List<Event> getFilteredEvents(List<Area> areas, LocalDate startDate, LocalDate endDate) {
+
+        if (areas == null || areas.isEmpty()) {
+            areas = null;
+        }
+
         return eventRepository.findByFilters(areas, startDate, endDate);
     }
 
