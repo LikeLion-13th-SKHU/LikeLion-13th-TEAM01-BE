@@ -1,4 +1,4 @@
-package com.saym.eventory.global.config;
+package com.saym.eventory.ai.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
