@@ -2,6 +2,11 @@ spring:
   profiles:
     active: prod
 
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 20MB
+
   datasource:
     url: ${spring.datasource.url}
     username: ${spring.datasource.username}
@@ -56,9 +61,9 @@ ai:
 cloud:
   aws:
     s3:
-      bucket: your-bucket-name
+      bucket: ${cloud.aws.s3.bucket}
     region:
-      static: ap-northeast-2
+      static: ${cloud.aws.region.static}
     credentials:
       access-key: ${cloud.aws.credentials.access-key}
       secret-key: ${cloud.aws.credentials.secret-key}

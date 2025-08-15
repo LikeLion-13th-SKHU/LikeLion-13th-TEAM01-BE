@@ -49,7 +49,8 @@ public enum Error {
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "알 수 없는 서버 에러가 발생했습니다"),
     JWT_CREATION_EXCEPTION(HttpStatus.INTERNAL_SERVER_ERROR, "JWT 토큰 생성 중 오류가 발생했습니다."),
     DATABASE_SAVE_FAIL(HttpStatus.INTERNAL_SERVER_ERROR, "DB 저장 중 오류가 발생했습니다."),
-    AI_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR,"AI 서버의 오류가 발생했습니다.")
+    AI_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR,"AI 서버의 오류가 발생했습니다."),
+    FILE_UPLOAD_FAILED(HttpStatus.INTERNAL_SERVER_ERROR,"사업자등록증 업로드 실패했습니다.")
     ;
 
     private final HttpStatus httpStatus;
