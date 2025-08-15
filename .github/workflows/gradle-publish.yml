@@ -32,13 +32,13 @@ jobs:
     - name: Prepare artifacts for deployment
       run: |
         mkdir -p before-deploy
-        cp scripts/*.sh before-deploy/
-        cp appspec.yml before-deploy/
-        cp build/libs/*.jar before-deploy/
+        cp Eventory/scripts/*.sh before-deploy/
+        cp Eventory/appspec.yml before-deploy/
+        cp Eventory/build/libs/*.jar before-deploy/
         cd before-deploy && zip -r before-deploy *
         cd ../ && mkdir -p deploy
         mv before-deploy/before-deploy.zip deploy/eventory.zip
-
+    
     - name: Deploy to S3 (GitHub Artifacts)
       uses: actions/upload-artifact@v4
       with:
