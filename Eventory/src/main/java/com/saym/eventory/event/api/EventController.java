@@ -5,6 +5,8 @@ import com.saym.eventory.event.api.dto.request.EventRequestDto;
 import com.saym.eventory.event.api.dto.response.EventDetailResponseDto;
 import com.saym.eventory.event.api.dto.response.EventInfoResponseDto;
 import com.saym.eventory.event.application.EventService;
+import com.saym.eventory.event.domain.Area;
+import com.saym.eventory.event.domain.Event;
 import com.saym.eventory.global.token.TokenProvider;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.servlet.http.HttpServletRequest;
@@ -13,7 +15,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+
+import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequiredArgsConstructor
@@ -116,4 +121,26 @@ public class EventController {
         eventService.deleteEvent(eventId);
         return ResponseEntity.ok(RspTemplate.success(HttpStatus.OK, "행사 삭제 성공", null));
     }
+
+    // 필터 기능
+    @GetMapping("/filter")
+    @Operation(method = "GET", summary = "필터 검색", description = "지역과 날짜로 행사를 필터링합니다.")
+    public ResponseEntity<RspTemplate<List<EventInfoResponseDto>>> getFilteredEvents(
+            @RequestParam(required = false) List<Area> areas,
+            @RequestParam(required = false) LocalDate startDate,
+            @RequestParam(required = false) LocalDate endDate
+    ) {
+        List<Event> filteredEvents = eventService.getFilteredEvents(areas, startDate, endDate);
+        List<EventInfoResponseDto> eventDtos = filteredEvents.stream()
+                .map(EventInfoResponseDto::from)
+                .collect(Collectors.toList());
+
+        RspTemplate<List<EventInfoResponseDto>> response = RspTemplate.success(
+                HttpStatus.OK,
+                "필터링된 행사 목록 조회 성공",
+                eventDtos
+        );
+        return ResponseEntity.ok(response);
+    }
+
 }
