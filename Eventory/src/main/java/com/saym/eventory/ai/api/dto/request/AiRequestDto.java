@@ -4,6 +4,6 @@ import org.springframework.web.multipart.MultipartFile;
 
 public record AiRequestDto(
         MultipartFile imageFile,
-        String title,
+//        String title,
         String description
 ) {}

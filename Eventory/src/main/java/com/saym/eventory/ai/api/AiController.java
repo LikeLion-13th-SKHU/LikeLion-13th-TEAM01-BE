@@ -26,12 +26,11 @@ public class AiController {
     )
     @PostMapping(value = "/analyze", consumes = "multipart/form-data")
     public AiResultResponseDto analyzeIdea(
-            @RequestPart(value = "imageFile", required = false) MultipartFile imageFile, // 선택적
-            @RequestPart("title") String title,
+            @RequestPart(value = "imageFile", required = false) MultipartFile imageFile,
             @RequestPart("description") String description,
             Principal principal
     ) throws Exception {
-        AiRequestDto aiRequestDto = new AiRequestDto(imageFile, title, description);
+        AiRequestDto aiRequestDto = new AiRequestDto(imageFile, description);
         return aiService.analyzeIdea(aiRequestDto, principal);
     }
 

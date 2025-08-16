@@ -44,12 +44,12 @@ public class AiService {
                 .orElseThrow(() -> new CustomException(Error.MEMBER_NOT_FOUND, "회원 정보를 찾을 수 없습니다."));
     }
 
+    // Todo: AI title 추출 변경 후 백엔드 로직 다듬기
     public AiResultResponseDto analyzeIdea(AiRequestDto aiRequestDto, Principal principal) throws Exception {
         Long memberId = Long.parseLong(principal.getName());
         Member member = getMemberById(memberId);
 
         // S3 이미지 업로드
-        // Todo: 이미지 업로드 유무 확인하기
         String imageUrl = null;
         if (aiRequestDto.imageFile() != null && !aiRequestDto.imageFile().isEmpty()) {
             try {
@@ -63,7 +63,7 @@ public class AiService {
 
         // AI 서버 호출 (텍스트 + 이미지 url)
         var requestBody = new java.util.HashMap<String, Object>();
-        requestBody.put("title", aiRequestDto.title());
+        requestBody.put("title", "행사명 추출해줘. '✨행사명: ~~~~' 이런식으로 부탁해."); // AI 수정 전에는 null로 반환됨
         requestBody.put("description", aiRequestDto.description());
         requestBody.put("image_url", imageUrl);
 
@@ -86,9 +86,9 @@ public class AiService {
 
         // 디비 저장
         Ai ai = Ai.builder()
-                .title(aiRequestDto.title())
+                .title(objectMapper.writeValueAsString(aiResult.title()))
                 .description(aiRequestDto.description())
-                .image_url(imageUrl) // S3 업로드 url (없으면 null)
+                .image_url(imageUrl) // S3 업로드 url
                 .considerationsJson(objectMapper.writeValueAsString(aiResult.considerations()))
                 .slogansJson(objectMapper.writeValueAsString(aiResult.slogans()))
                 .userEvaluationJson(objectMapper.writeValueAsString(aiResult.userEvaluation()))
@@ -99,7 +99,7 @@ public class AiService {
         aiRepository.save(ai);
 
         AiResultResponseDto finalResult = new AiResultResponseDto(
-                aiRequestDto.title(),
+                aiResult.title(),
                 aiResult.considerations(),
                 aiResult.slogans(),
                 aiResult.userEvaluation()
