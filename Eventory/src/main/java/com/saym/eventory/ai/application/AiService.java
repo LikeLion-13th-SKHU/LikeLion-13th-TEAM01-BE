@@ -8,6 +8,7 @@ import com.saym.eventory.ai.domain.Ai;
 import com.saym.eventory.ai.domain.repository.AiRepository;
 import com.saym.eventory.common.exception.CustomException;
 import com.saym.eventory.common.exception.Error;
+import com.saym.eventory.global.s3.service.S3Service;
 import com.saym.eventory.member.domain.Member;
 import com.saym.eventory.member.domain.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +29,7 @@ public class AiService {
     private final AiRepository aiRepository;
     private final MemberRepository memberRepository;
     private final ObjectMapper objectMapper;
+    private final S3Service s3Service;
 
     @Value("${ai.base-url}")
     private String aiBaseUrl;
@@ -46,14 +48,31 @@ public class AiService {
         Long memberId = Long.parseLong(principal.getName());
         Member member = getMemberById(memberId);
 
-        String requestUrl = aiBaseUrl + aiChatPath;
-        log.info("AI requestUrl = {} data = {}", requestUrl, aiRequestDto);
+        // S3 이미지 업로드
+        // Todo: 이미지 업로드 유무 확인
+        String imageUrl = null;
+        if (aiRequestDto.imageFile() != null && !aiRequestDto.imageFile().isEmpty()) {
+            try {
+                imageUrl = s3Service.uploadFile(aiRequestDto.imageFile());
+                log.info("AI 요청용 이미지 업로드 성공: {}", imageUrl);
+            } catch (Exception e) {
+                log.error("AI 요청용 이미지 업로드 실패", e);
+                throw new CustomException(Error.FILE_UPLOAD_FAILED, "AI 이미지 업로드 실패");
+            }
+        }
 
+        // AI 서버 호출 (텍스트 + 이미지 url)
+        var requestBody = new java.util.HashMap<String, Object>();
+        requestBody.put("title", aiRequestDto.title());
+        requestBody.put("description", aiRequestDto.description());
+        requestBody.put("image_url", imageUrl);
+
+        String requestUrl = aiBaseUrl + aiChatPath;
         AiResultResponseDto aiResult;
         try {
             aiResult = restTemplate.postForObject(
                     requestUrl,
-                    aiRequestDto,
+                    requestBody,
                     AiResultResponseDto.class
             );
         } catch (Exception e) {
@@ -65,20 +84,11 @@ public class AiService {
             throw new CustomException(Error.AI_SERVER_ERROR, "AI 서버에서 응답이 없습니다.");
         }
 
-        log.info("AI 응답 수신: {}", aiResult);
-
-        aiResult = new AiResultResponseDto(
-                aiRequestDto.title(),
-                aiResult.considerations(),
-                aiResult.slogans(),
-                aiResult.userEvaluation()
-        );
-
-        // DB 저장
+        // 디비 저장
         Ai ai = Ai.builder()
                 .title(aiRequestDto.title())
                 .description(aiRequestDto.description())
-                .image_url(aiRequestDto.image_url())
+                .image_url(imageUrl) // S3 업로드 url (없으면 null)
                 .considerationsJson(objectMapper.writeValueAsString(aiResult.considerations()))
                 .slogansJson(objectMapper.writeValueAsString(aiResult.slogans()))
                 .userEvaluationJson(objectMapper.writeValueAsString(aiResult.userEvaluation()))
@@ -87,7 +97,17 @@ public class AiService {
                 .build();
 
         aiRepository.save(ai);
-        return aiResult;
+
+        AiResultResponseDto finalResult = new AiResultResponseDto(
+                aiRequestDto.title(),
+                aiResult.considerations(),
+                aiResult.slogans(),
+                aiResult.userEvaluation()
+        );
+
+        aiRepository.save(ai);
+
+        return finalResult;
     }
 
     public AiChatResponseDto getChatInfo(Long aiId) throws Exception {

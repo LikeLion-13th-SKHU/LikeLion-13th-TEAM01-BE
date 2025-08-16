@@ -8,6 +8,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
 
@@ -23,10 +24,17 @@ public class AiController {
             summary = "행사 아이디어를 입력하여 AI 평가 출력",
             description = "기획안 이미지, 행사명, 행사 설명을 AI에 전달하여 분석 결과(고려사항, 슬로건, 긍정/부정 비율)를 반환합니다. ai 채팅 연장은 유료 기능 (한 채팅당 하나의 결과물만 제공, 연장 X)"
     )
-    @PostMapping("/analyze")
-    public AiResultResponseDto analyzeIdea(@RequestBody AiRequestDto aiRequestDto, Principal principal) throws Exception {
+    @PostMapping(value = "/analyze", consumes = "multipart/form-data")
+    public AiResultResponseDto analyzeIdea(
+            @RequestPart(value = "imageFile", required = false) MultipartFile imageFile, // 선택적
+            @RequestPart("title") String title,
+            @RequestPart("description") String description,
+            Principal principal
+    ) throws Exception {
+        AiRequestDto aiRequestDto = new AiRequestDto(imageFile, title, description);
         return aiService.analyzeIdea(aiRequestDto, principal);
     }
+
 
     @Operation(
             summary = "채팅 내용 조회",
