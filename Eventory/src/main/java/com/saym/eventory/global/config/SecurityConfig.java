@@ -42,6 +42,7 @@ public class SecurityConfig {
                         .requestMatchers("/v3/api-docs/**").permitAll() // Swagger API 문서 허용
                         .requestMatchers("api/v1/oauth2/**").permitAll() // OAuth2 허용
                         .requestMatchers("api/v1/event/**").permitAll() // event 허용
+                        .requestMatchers("api/v1/shop/**").permitAll() // shop 허용
 
                         .anyRequest().authenticated() // 그 외 모든 요청은 인증이 필요하도록 설정
                 ) // 인증 및 권한 부여 규칙 설정
