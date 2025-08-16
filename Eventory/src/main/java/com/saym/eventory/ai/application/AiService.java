@@ -49,7 +49,7 @@ public class AiService {
         Member member = getMemberById(memberId);
 
         // S3 이미지 업로드
-        // Todo: 이미지 업로드 유무 확인
+        // Todo: 이미지 업로드 유무 확인하기
         String imageUrl = null;
         if (aiRequestDto.imageFile() != null && !aiRequestDto.imageFile().isEmpty()) {
             try {
