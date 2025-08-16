@@ -3,13 +3,13 @@
 # 쉬고 있는 profile 찾기: real1이 사용 중이면 real2가 쉬고 있고 반대면 real1이 쉬고 있음
 
 function find_idle_profile() {
-    RESPONSE_CODE=$(curl -s -o /dev/null -w "%{http_code}" https://cookie-house.store/profile) # 현재 Nginx가 바라보고 있는 스프링 부트가 정상적으로 수행 중인지 확인하고 응답값으로 상태코드를 전달받음
+    RESPONSE_CODE=$(curl -s -o /dev/null -w "%{http_code}" https://book-hub.store/profile) # 현재 Nginx가 바라보고 있는 스프링 부트가 정상적으로 수행 중인지 확인하고 응답값으로 상태코드를 전달받음
 
     if [ ${RESPONSE_CODE} -ge 400 ] # 400번대 이상의 오류일 경우 real2를 사용
     then
       CURRENT_PROFILE=real2
     else
-      CURRENT_PROFILE=$(curl -s https://cookie-house.store/profile)
+      CURRENT_PROFILE=$(curl -s https://book-hub.store/profile)
     fi
 
     if [ ${CURRENT_PROFILE} == real1 ]
