@@ -11,6 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.security.Principal;
+
 @RestController
 @RequestMapping("/api/v1/member")
 @RequiredArgsConstructor
@@ -20,12 +22,13 @@ public class MemberController {
     private final MemberService memberService;
 
     @Operation(summary = "사용자 유형 변경 요청 (사업자등록증 이미지 업로드 포함), GENERAL은 null 허용하여 바로 승인됩니다.")
-    @PatchMapping(value = "/{memberId}/user-type", consumes = {"multipart/form-data"})
+    @PatchMapping(value = "/user-type", consumes = {"multipart/form-data"})
     public RspTemplate<MemberResponseDto> changeUserType(
-            @PathVariable Long memberId,
             @RequestPart("userType") String userTypeStr,
-            @RequestPart(value = "businessLicenseFile", required = false) MultipartFile file
+            @RequestPart(value = "businessLicenseFile", required = false) MultipartFile file,
+            Principal principal
     ) {
+        Long memberId = Long.parseLong(principal.getName()); // 로그인한 유저의 memberId
         ChangeUserTypeRequestDto dto = new ChangeUserTypeRequestDto(
                 UserType.valueOf(userTypeStr),
                 file
