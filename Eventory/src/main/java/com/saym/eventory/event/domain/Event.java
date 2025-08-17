@@ -70,8 +70,12 @@ public class Event {
         this.eventName = eventRequestDto.eventName();
         this.eventStartDate = eventRequestDto.eventStartDate();
         this.eventEndDate = eventRequestDto.eventEndDate();
-        this.pictureUrl = eventRequestDto.pictureUrl();
         this.area = eventRequestDto.area();
         this.content = eventRequestDto.content();
+        this.address = eventRequestDto.address();
+    }
+
+    public void setPictureUrl(String pictureUrl) {
+        this.pictureUrl = pictureUrl;
     }
 }

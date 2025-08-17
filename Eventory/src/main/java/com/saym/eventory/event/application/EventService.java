@@ -11,6 +11,7 @@ import com.saym.eventory.event.domain.Area;
 import com.saym.eventory.event.domain.Event;
 import com.saym.eventory.event.domain.EventSortType;
 import com.saym.eventory.event.domain.repository.EventRepository;
+import com.saym.eventory.global.s3.service.S3Service;
 import com.saym.eventory.member.domain.Member;
 import com.saym.eventory.member.domain.UserType;
 import com.saym.eventory.member.domain.repository.MemberRepository;
@@ -33,6 +34,7 @@ public class EventService {
     private final EventRepository eventRepository;
     private final BookmarkRepository bookmarkRepository;
     private final MemberRepository memberRepository;
+    private final S3Service s3Service;
 
     private Member getMemberByPrincipal(Principal principal) {
         Long memberId = Long.parseLong(principal.getName());
@@ -112,11 +114,21 @@ public class EventService {
             throw new CustomException(Error.INVALID_USER_ACCESS,Error.INVALID_USER_ACCESS.getMessage());
         }
 
+        // S3에 파일 업로드
+        String pictureUrl = null;
+
+        if (eventRequestDto.eventPicture() != null && !eventRequestDto.eventPicture().isEmpty()) {
+            try {
+                pictureUrl = s3Service.uploadFile(eventRequestDto.eventPicture(), "events");
+            } catch (Exception e) {
+                throw new CustomException(Error.FILE_UPLOAD_FAILED, "파일 업로드에 실패했습니다.");
+            }
+        }
         Event event = Event.builder()
                 .eventName(eventRequestDto.eventName())
                 .eventStartDate(eventRequestDto.eventStartDate())
                 .eventEndDate(eventRequestDto.eventEndDate())
-                .pictureUrl(eventRequestDto.pictureUrl())
+                .pictureUrl(pictureUrl)
                 .area(eventRequestDto.area())
                 .content(eventRequestDto.content())
                 .address(eventRequestDto.address())
@@ -142,7 +154,23 @@ public class EventService {
         if (!event.getMember().getId().equals(member.getId())) {
             throw new CustomException(Error.INVALID_USER_ACCESS,Error.INVALID_USER_ACCESS.getMessage());
         }
+
+        String newPictureUrl = event.getPictureUrl();
+
+        // S3 기존 파일 삭제 후 새로운 파일 업로드
+        if (dto.eventPicture() != null && !dto.eventPicture().isEmpty()) {
+            if (event.getPictureUrl() != null) {
+                s3Service.deleteFile(event.getPictureUrl());
+            }
+
+            try {
+                newPictureUrl = s3Service.uploadFile(dto.eventPicture(), "events");
+            } catch (Exception e) {
+                throw new CustomException(Error.FILE_UPLOAD_FAILED, "파일 업로드에 실패했습니다.");
+            }
+        }
         event.updateEvent(dto);
+        event.setPictureUrl(newPictureUrl);
     }
 
     // 행사 삭제
@@ -160,6 +188,12 @@ public class EventService {
         if (!event.getMember().getId().equals(member.getId())) {
             throw new CustomException(Error.RESOURCE_NOT_OWNED,Error.RESOURCE_NOT_OWNED.getMessage());
         }
+
+        // S3 파일 삭제
+        if (event.getPictureUrl() != null) {
+            s3Service.deleteFile(event.getPictureUrl());
+        }
+
         eventRepository.delete(event);
     }
 

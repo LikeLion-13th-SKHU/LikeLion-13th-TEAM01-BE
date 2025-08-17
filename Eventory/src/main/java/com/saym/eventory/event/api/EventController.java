@@ -106,7 +106,7 @@ public class EventController {
     @PostMapping
     @Operation(summary = "행사 등록", description = "행사를 등록합니다.")
     public ResponseEntity<RspTemplate<Long>> createEvent(
-            @RequestBody EventRequestDto eventRequestDto,
+            @ModelAttribute EventRequestDto eventRequestDto,
             Principal principal) {
 
         Long id = eventService.createEvent(eventRequestDto, principal);
@@ -117,7 +117,7 @@ public class EventController {
 
     @PutMapping("/{eventId}")
     @Operation(summary = "행사 수정", description = "행사 정보를 수정합니다.")
-    public ResponseEntity<RspTemplate<Void>> updateEvent (@PathVariable Long eventId, @RequestBody EventRequestDto
+    public ResponseEntity<RspTemplate<Void>> updateEvent (@PathVariable Long eventId, @ModelAttribute EventRequestDto
             eventRequestDto, Principal principal) {
 
         eventService.updateEvent(eventId, eventRequestDto, principal);
