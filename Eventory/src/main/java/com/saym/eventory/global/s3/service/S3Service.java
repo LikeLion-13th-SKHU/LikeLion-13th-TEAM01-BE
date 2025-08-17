@@ -24,12 +24,13 @@ public class S3Service {
     @Value("${cloud.aws.region.static}")
     private String region;
 
-    public String uploadFile(MultipartFile file) throws IOException {
-        String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+    public String uploadFile(MultipartFile file, String folderName) throws IOException {
+        String key = folderName + "/" + UUID.randomUUID() + "_" + file.getOriginalFilename();
+
 
         PutObjectRequest putObjectRequest = PutObjectRequest.builder()
                 .bucket(bucketName)
-                .key(fileName)
+                .key(key)
                 .contentType(file.getContentType())
                 .build();
 
@@ -38,6 +39,6 @@ public class S3Service {
         return String.format("https://%s.s3.%s.amazonaws.com/%s",
                 bucketName,
                 region,
-                fileName);
+                key);
     }
 }

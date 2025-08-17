@@ -72,7 +72,7 @@ public class MemberService {
 
             try {
                 // S3 업로드 후 URL 저장
-                String uploadedUrl = s3Service.uploadFile(dto.businessLicenseFile());
+                String uploadedUrl = s3Service.uploadFile(dto.businessLicenseFile(), "business-license");
                 log.info("파일 업로드 성공적. URL={}", uploadedUrl);
                 member.changeUserType(requestedType, uploadedUrl);
             } catch (Exception e) {
