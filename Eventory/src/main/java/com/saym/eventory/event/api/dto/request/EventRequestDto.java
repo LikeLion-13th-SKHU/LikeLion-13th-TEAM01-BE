@@ -9,5 +9,6 @@ public record EventRequestDto(
         LocalDate eventEndDate,
         String pictureUrl,
         Area area,
-        String content
+        String content,
+        String address
 ) {}

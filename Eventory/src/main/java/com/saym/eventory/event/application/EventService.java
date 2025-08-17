@@ -94,7 +94,10 @@ public class EventService {
 
     // 행사 생성
     @Transactional
-    public Long createEvent(EventRequestDto eventRequestDto) {
+    public Long createEvent(EventRequestDto eventRequestDto, Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("회원이 존재하지 않습니다."));
+
         Event event = Event.builder()
                 .eventName(eventRequestDto.eventName())
                 .eventStartDate(eventRequestDto.eventStartDate())
@@ -102,9 +105,13 @@ public class EventService {
                 .pictureUrl(eventRequestDto.pictureUrl())
                 .area(eventRequestDto.area())
                 .content(eventRequestDto.content())
+                .address(eventRequestDto.address())
+                .member(member)
                 .build();
+
         return eventRepository.save(event).getEventId();
     }
+
 
     // 행사 수정
     @Transactional

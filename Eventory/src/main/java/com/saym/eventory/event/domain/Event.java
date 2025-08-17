@@ -53,7 +53,8 @@ public class Event {
     private List<Bookmark> bookmarks = new ArrayList<>();
 
     @Builder
-    private Event(String eventName, LocalDate eventStartDate, LocalDate eventEndDate, String pictureUrl, Area area, String content, String address) {
+    private Event(String eventName, LocalDate eventStartDate, LocalDate eventEndDate,
+                  String pictureUrl, Area area, String content, String address, Member member) {
         this.eventName = eventName;
         this.eventStartDate = eventStartDate;
         this.eventEndDate = eventEndDate;
@@ -61,7 +62,9 @@ public class Event {
         this.area = area;
         this.content = content;
         this.address = address;
+        this.member = member;
     }
+
 
     public void updateEvent(EventRequestDto eventRequestDto) {
         this.eventName = eventRequestDto.eventName();

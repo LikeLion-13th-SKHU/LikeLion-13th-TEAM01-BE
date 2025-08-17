@@ -101,8 +101,16 @@ public class EventController {
 
     @PostMapping
     @Operation(summary = "행사 등록", description = "행사를 등록합니다.")
-    public ResponseEntity<RspTemplate<Long>> createEvent (@RequestBody EventRequestDto eventRequestDto){
-        Long id = eventService.createEvent(eventRequestDto);
+    public ResponseEntity<RspTemplate<Long>> createEvent(
+            @RequestBody EventRequestDto eventRequestDto,
+            HttpServletRequest request) {
+
+        // 토큰에서 memberId 추출
+        String token = tokenProvider.resolveToken(request);
+        Long memberId = Long.parseLong(tokenProvider.getAuthentication(token).getName());
+
+        Long id = eventService.createEvent(eventRequestDto, memberId);
+
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(RspTemplate.success(HttpStatus.CREATED, "행사 생성 성공", id));
     }
