@@ -15,6 +15,8 @@ public enum Error {
     NOT_FOUND_COMMUNITY(HttpStatus.NOT_FOUND, "존재하지 않는 커뮤니티 글입니다."),
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "회원을 찾을 수 없습니다."),
     AI_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 AI 정보를 찾을 수 없습니다."),
+    STORE_NOT_FOUND(HttpStatus.NOT_FOUND, "가게를 찾을 수 없습니다."),
+    MENU_NOT_FOUND(HttpStatus.NOT_FOUND, "메뉴를 찾을 수 없습니다."),
 
     // 400 BAD REQUEST EXCEPTION
     BAD_REQUEST_ID(HttpStatus.BAD_REQUEST, "잘못된 id값입니다."),
@@ -25,6 +27,8 @@ public enum Error {
     EXIST_USER(HttpStatus.BAD_REQUEST, "이미 가입한 유저입니다."),
     INVALID_REFRESH_TOKEN(HttpStatus.BAD_REQUEST, "유효하지 않은 리프레시 토큰입니다."),
     BUSINESS_LICENSE_REQUIRED(HttpStatus.BAD_REQUEST, "사업자등록증 이미지는 필수입니다."),
+    STORE_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "이미 가게를 등록했습니다."),
+    PICTURE_REQUIRED(HttpStatus.BAD_REQUEST, "가게 대표 이미지는 필수입니다."),
 
     // 401 UNAUTHORIZED EXCEPTION
     TOKEN_TIME_EXPIRED_EXCEPTION(HttpStatus.UNAUTHORIZED, "만료된 토큰입니다."),
