@@ -1,6 +1,7 @@
 package com.saym.eventory.ai.api;
 
 import com.saym.eventory.ai.api.dto.request.AiRequestDto;
+import com.saym.eventory.ai.api.dto.response.AiAnalyzeResponseDto;
 import com.saym.eventory.ai.api.dto.response.AiChatResponseDto;
 import com.saym.eventory.ai.api.dto.response.AiResultResponseDto;
 import com.saym.eventory.ai.application.AiService;
@@ -22,13 +23,15 @@ public class AiController {
 
     @Operation(
             summary = "행사 아이디어를 입력하여 AI 평가 출력",
-            description = "기획안 이미지, 행사명, 행사 설명을 AI에 전달하여 분석 결과(고려사항, 슬로건, 긍정/부정 비율)를 반환합니다. ai 채팅 연장은 유료 기능 (한 채팅당 하나의 결과물만 제공, 연장 X)"
+            description = "기획안 이미지, 행사명, 행사 설명을 AI에 전달하여 분석 결과(고려사항, 슬로건, 긍정/부정 비율)를 반환합니다. <br>" +
+                    "ai 채팅 연장은 유료 기능 (한 채팅당 하나의 결과물만 제공, 연장 X) <br>" +
+                    "**이미지는 필수 입력입니다.**"
     )
     @PostMapping(value = "/analyze", consumes = "multipart/form-data")
-    public AiResultResponseDto analyzeIdea(
-            @RequestPart(value = "imageFile", required = false) MultipartFile imageFile,
-            @RequestPart("description") String description,
-            Principal principal
+    public AiAnalyzeResponseDto analyzeIdea(
+                                             @RequestPart(value = "imageFile", required = false) MultipartFile imageFile,
+                                             @RequestPart("description") String description,
+                                             Principal principal
     ) throws Exception {
         AiRequestDto aiRequestDto = new AiRequestDto(imageFile, description);
         return aiService.analyzeIdea(aiRequestDto, principal);
