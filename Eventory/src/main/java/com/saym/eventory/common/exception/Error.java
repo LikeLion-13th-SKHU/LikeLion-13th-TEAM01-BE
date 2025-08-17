@@ -38,6 +38,7 @@ public enum Error {
     UNAUTHORIZED_ACCESS(HttpStatus.FORBIDDEN,"리소스에 접근할 수 없는 유저입니다. 토큰을 확인해주세요."),
     NO_INSTRUCTOR(HttpStatus.FORBIDDEN, "강사정보가 없는 유저입니다."),
     INVALID_USER_ACCESS(HttpStatus.FORBIDDEN, "접근 권한이 없는 유저입니다."),
+    RESOURCE_NOT_OWNED(HttpStatus.FORBIDDEN, "본인이 등록한 행사만 수정/삭제할 수 있습니다."),
 
     // 422 UNPROCESSABLE_ENTITY
     UNPROCESSABLE_ENTITY_DELETE_EXCEPTION(HttpStatus.UNPROCESSABLE_ENTITY, "서버에서 요청을 이해해 삭제하려는 도중 문제가 생겼습니다."),

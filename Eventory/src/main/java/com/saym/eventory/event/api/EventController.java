@@ -7,8 +7,10 @@ import com.saym.eventory.event.api.dto.response.EventInfoResponseDto;
 import com.saym.eventory.event.application.EventService;
 import com.saym.eventory.event.domain.Area;
 import com.saym.eventory.event.domain.Event;
+import com.saym.eventory.event.domain.EventSortType;
 import com.saym.eventory.global.token.TokenProvider;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -16,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 
+import java.security.Principal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -23,6 +26,7 @@ import java.util.stream.Collectors;
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/event")
+@Tag(name = "Event API", description = "행사 관련 API입니다.")
 public class EventController {
 
     private final EventService eventService;
@@ -103,13 +107,9 @@ public class EventController {
     @Operation(summary = "행사 등록", description = "행사를 등록합니다.")
     public ResponseEntity<RspTemplate<Long>> createEvent(
             @RequestBody EventRequestDto eventRequestDto,
-            HttpServletRequest request) {
+            Principal principal) {
 
-        // 토큰에서 memberId 추출
-        String token = tokenProvider.resolveToken(request);
-        Long memberId = Long.parseLong(tokenProvider.getAuthentication(token).getName());
-
-        Long id = eventService.createEvent(eventRequestDto, memberId);
+        Long id = eventService.createEvent(eventRequestDto, principal);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(RspTemplate.success(HttpStatus.CREATED, "행사 생성 성공", id));
@@ -118,15 +118,19 @@ public class EventController {
     @PutMapping("/{eventId}")
     @Operation(summary = "행사 수정", description = "행사 정보를 수정합니다.")
     public ResponseEntity<RspTemplate<Void>> updateEvent (@PathVariable Long eventId, @RequestBody EventRequestDto
-            eventRequestDto){
-        eventService.updateEvent(eventId, eventRequestDto);
+            eventRequestDto, Principal principal) {
+
+        eventService.updateEvent(eventId, eventRequestDto, principal);
+
         return ResponseEntity.ok(RspTemplate.success(HttpStatus.OK, "행사 수정 성공", null));
     }
 
     @DeleteMapping("/{eventId}")
     @Operation(summary = "행사 삭제", description = "행사를 삭제합니다.")
-    public ResponseEntity<RspTemplate<Void>> deleteEvent (@PathVariable Long eventId){
-        eventService.deleteEvent(eventId);
+    public ResponseEntity<RspTemplate<Void>> deleteEvent (@PathVariable Long eventId, Principal principal) {
+
+        eventService.deleteEvent(eventId, principal);
+
         return ResponseEntity.ok(RspTemplate.success(HttpStatus.OK, "행사 삭제 성공", null));
     }
 
@@ -151,4 +155,11 @@ public class EventController {
         return ResponseEntity.ok(response);
     }
 
+    // 정렬 기능
+    @GetMapping("/arrange")
+    @Operation(method = "GET", summary = "정렬 조회", description = "행사를 가나다순, 날짜순을 정렬합니다.")
+    public ResponseEntity<List<EventInfoResponseDto>> getArrangedEvents(
+            @RequestParam(defaultValue = "DATE_ASC") EventSortType sortType) {
+        return ResponseEntity.ok(eventService.getEvents(sortType));
+    }
 }

@@ -3,20 +3,26 @@ package com.saym.eventory.event.application;
 
 import com.saym.eventory.bookmark.domain.Bookmark;
 import com.saym.eventory.bookmark.domain.repository.BookmarkRepository;
+import com.saym.eventory.common.exception.CustomException;
+import com.saym.eventory.common.exception.Error;
 import com.saym.eventory.event.api.dto.response.EventDetailResponseDto;
 import com.saym.eventory.event.api.dto.response.EventInfoResponseDto;
 import com.saym.eventory.event.domain.Area;
 import com.saym.eventory.event.domain.Event;
+import com.saym.eventory.event.domain.EventSortType;
 import com.saym.eventory.event.domain.repository.EventRepository;
 import com.saym.eventory.member.domain.Member;
+import com.saym.eventory.member.domain.UserType;
 import com.saym.eventory.member.domain.repository.MemberRepository;
 import com.saym.eventory.event.api.dto.request.EventRequestDto;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
+import java.security.Principal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -28,6 +34,11 @@ public class EventService {
     private final BookmarkRepository bookmarkRepository;
     private final MemberRepository memberRepository;
 
+    private Member getMemberByPrincipal(Principal principal) {
+        Long memberId = Long.parseLong(principal.getName());
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new CustomException(Error.MEMBER_NOT_FOUND, "회원을 찾을 수 없습니다."));
+    }
 
     // 행사 불러오기 (제목, 날짜, 사진) = 행사 조회 페이지
     public List<EventInfoResponseDto> getEventList() {
@@ -94,9 +105,12 @@ public class EventService {
 
     // 행사 생성
     @Transactional
-    public Long createEvent(EventRequestDto eventRequestDto, Long memberId) {
-        Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new IllegalArgumentException("회원이 존재하지 않습니다."));
+    public Long createEvent(EventRequestDto eventRequestDto, Principal principal) {
+        Member member = getMemberByPrincipal(principal);
+
+        if (member.getUserType() != UserType.ORGANIZER) {
+            throw new CustomException(Error.INVALID_USER_ACCESS,Error.INVALID_USER_ACCESS.getMessage());
+        }
 
         Event event = Event.builder()
                 .eventName(eventRequestDto.eventName())
@@ -115,17 +129,37 @@ public class EventService {
 
     // 행사 수정
     @Transactional
-    public void updateEvent(Long eventId, EventRequestDto dto) {
+    public void updateEvent(Long eventId, EventRequestDto dto, Principal principal) {
+        Member member = getMemberByPrincipal(principal);
+
+        if (member.getUserType() != UserType.ORGANIZER) {
+            throw new CustomException(Error.INVALID_USER_ACCESS,Error.INVALID_USER_ACCESS.getMessage());
+        }
+
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new EntityNotFoundException("행사를 찾을 수 없습니다."));
+
+        if (!event.getMember().getId().equals(member.getId())) {
+            throw new CustomException(Error.INVALID_USER_ACCESS,Error.INVALID_USER_ACCESS.getMessage());
+        }
         event.updateEvent(dto);
     }
 
     // 행사 삭제
     @Transactional
-    public void deleteEvent(Long eventId) {
+    public void deleteEvent(Long eventId, Principal principal) {
+        Member member = getMemberByPrincipal(principal);
+
+        if (member.getUserType() != UserType.ORGANIZER) {
+            throw new CustomException(Error.INVALID_USER_ACCESS,Error.INVALID_USER_ACCESS.getMessage());
+        }
+
         Event event = eventRepository.findById(eventId)
                 .orElseThrow(() -> new EntityNotFoundException("행사를 찾을 수 없습니다."));
+
+        if (!event.getMember().getId().equals(member.getId())) {
+            throw new CustomException(Error.RESOURCE_NOT_OWNED,Error.RESOURCE_NOT_OWNED.getMessage());
+        }
         eventRepository.delete(event);
     }
 
@@ -138,5 +172,20 @@ public class EventService {
 
         return eventRepository.findByFilters(areas, startDate, endDate);
     }
+
+    // 정렬 기능
+    public List<EventInfoResponseDto> getEvents(EventSortType sortType) {
+        Sort sort = switch (sortType) {
+            case NAME_ASC -> Sort.by(Sort.Direction.ASC, "eventName");
+            case DATE_ASC -> Sort.by(Sort.Direction.ASC, "eventStartDate");
+            case DATE_DESC -> Sort.by(Sort.Direction.DESC, "eventStartDate");
+        };
+
+        return eventRepository.findAll(sort)
+                .stream()
+                .map(EventInfoResponseDto::from)
+                .toList();
+    }
+
 
 }
