@@ -2,6 +2,8 @@ package com.saym.eventory.ai.application;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.saym.eventory.ai.api.dto.request.AiRequestDto;
+import com.saym.eventory.ai.api.dto.response.AiAllRecordResponseDto;
+import com.saym.eventory.ai.api.dto.response.AiAnalyzeResponseDto;
 import com.saym.eventory.ai.api.dto.response.AiChatResponseDto;
 import com.saym.eventory.ai.api.dto.response.AiResultResponseDto;
 import com.saym.eventory.ai.domain.Ai;
@@ -20,6 +22,7 @@ import org.springframework.web.client.RestTemplate;
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -44,12 +47,10 @@ public class AiService {
                 .orElseThrow(() -> new CustomException(Error.MEMBER_NOT_FOUND, "회원 정보를 찾을 수 없습니다."));
     }
 
-    // Todo: AI title 추출 변경 후 백엔드 로직 다듬기
-    public AiResultResponseDto analyzeIdea(AiRequestDto aiRequestDto, Principal principal) throws Exception {
+    public AiAnalyzeResponseDto analyzeIdea(AiRequestDto aiRequestDto, Principal principal) throws Exception {
         Long memberId = Long.parseLong(principal.getName());
         Member member = getMemberById(memberId);
 
-        // S3 이미지 업로드
         String imageUrl = null;
         if (aiRequestDto.imageFile() != null && !aiRequestDto.imageFile().isEmpty()) {
             try {
@@ -61,9 +62,8 @@ public class AiService {
             }
         }
 
-        // AI 서버 호출 (텍스트 + 이미지 url)
         var requestBody = new java.util.HashMap<String, Object>();
-        requestBody.put("title", "행사명 추출해줘. '✨행사명: ~~~~' 이런식으로 부탁해."); // AI 수정 전에는 null로 반환됨
+        requestBody.put("title", "행사명 추출해줘. '✨행사명: ~~~~' 이런식으로 부탁해.");
         requestBody.put("description", aiRequestDto.description());
         requestBody.put("image_url", imageUrl);
 
@@ -84,11 +84,10 @@ public class AiService {
             throw new CustomException(Error.AI_SERVER_ERROR, "AI 서버에서 응답이 없습니다.");
         }
 
-        // 디비 저장
         Ai ai = Ai.builder()
                 .title(objectMapper.writeValueAsString(aiResult.title()))
                 .description(aiRequestDto.description())
-                .image_url(imageUrl) // S3 업로드 url
+                .image_url(imageUrl)
                 .considerationsJson(objectMapper.writeValueAsString(aiResult.considerations()))
                 .slogansJson(objectMapper.writeValueAsString(aiResult.slogans()))
                 .userEvaluationJson(objectMapper.writeValueAsString(aiResult.userEvaluation()))
@@ -96,18 +95,9 @@ public class AiService {
                 .member(member)
                 .build();
 
-        aiRepository.save(ai);
+        Ai savedAi = aiRepository.save(ai);
 
-        AiResultResponseDto finalResult = new AiResultResponseDto(
-                aiResult.title(),
-                aiResult.considerations(),
-                aiResult.slogans(),
-                aiResult.userEvaluation()
-        );
-
-        aiRepository.save(ai);
-
-        return finalResult;
+        return new AiAnalyzeResponseDto(savedAi.getId(), aiResult);
     }
 
     public AiChatResponseDto getChatInfo(Long aiId) throws Exception {
@@ -127,5 +117,21 @@ public class AiService {
                 slogans,
                 userEvaluation
         );
+    }
+
+    public List<AiAllRecordResponseDto> getAllAiRecords(Principal principal) {
+        Long memberId = Long.parseLong(principal.getName());
+        Member member = getMemberById(memberId);
+
+        List<Ai> aiRecords = aiRepository.findByMemberOrderByChatDateDesc(member);
+
+        return aiRecords.stream()
+                .map(ai -> new AiAllRecordResponseDto( // 변경된 DTO 이름 사용
+                        ai.getId(),
+                        ai.getImage_url(),
+                        ai.getDescription(),
+                        ai.getChatDate()
+                ))
+                .collect(Collectors.toList());
     }
 }
