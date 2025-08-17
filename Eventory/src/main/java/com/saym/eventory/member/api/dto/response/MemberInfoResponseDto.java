@@ -5,9 +5,14 @@ import com.saym.eventory.member.domain.UserType;
 
 public record MemberInfoResponseDto(
         String name,
-        UserType userType
-) {
+        UserType userType,
+        String pictureUrl
+        ) {
     public static MemberInfoResponseDto from(Member member) {
-        return new MemberInfoResponseDto(member.getName(), member.getUserType());
+        return new MemberInfoResponseDto(
+                member.getName(),
+                member.getUserType(),
+                member.getPictureUrl()
+        );
     }
 }
