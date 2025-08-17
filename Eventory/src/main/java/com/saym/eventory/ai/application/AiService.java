@@ -53,7 +53,7 @@ public class AiService {
         String imageUrl = null;
         if (aiRequestDto.imageFile() != null && !aiRequestDto.imageFile().isEmpty()) {
             try {
-                imageUrl = s3Service.uploadFile(aiRequestDto.imageFile());
+                imageUrl = s3Service.uploadFile(aiRequestDto.imageFile(), "ai");
                 log.info("AI 요청용 이미지 업로드 성공: {}", imageUrl);
             } catch (Exception e) {
                 log.error("AI 요청용 이미지 업로드 실패", e);
