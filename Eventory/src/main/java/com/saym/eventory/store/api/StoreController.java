@@ -29,13 +29,11 @@ public class StoreController {
 
     @Operation(
             summary = "가게 등록 (가맹점주만 가능)",
-            description = "메뉴를 제외한 모든 필드는 필수 입력입니다. <br>" +
-                    "전화번호는 '-' 포함 (ex: 02-123-4567), <br>" +
+            description = "**Responses 의 data 속 id 가 storeId 입니다.** <br>"
+                    + "메뉴를 제외한 모든 필드는 필수 입력입니다. <br>" +
+                    "전화번호는 '-' 포함 ex) 02-123-4567 (021234567도 가능하지만 안 예뻐서..)<br>" +
                     "오픈/마감 시간은 HH:mm 형식 (24시간 기준)으로 작성해주세요. <br>" +
-                    "대표 이미지는 필수 입니다. <br> 메뉴 정보는 JSON 배열로 전달 가능합니다. <br> ex) [ <br>" +
-                    "{\"menuName\": \"에그마요 샌드위치\", \"price\": 6500, \"isSignature\": true}, <br>" +
-                    "{\"menuName\": \"햄치즈 샌드위치\", \"price\": 7000, \"isSignature\": false} <br>" +
-                    "]"
+                    "대표 이미지는 필수 입니다. <br> 메뉴 정보는 JSON 배열로 전달 가능합니다. <br> ex) [ {\"menuName\": \"에그마요 샌드위치\", \"price\": 6500, \"isSignature\": true}, {\"menuName\": \"햄치즈 샌드위치\", \"price\": 7000, \"isSignature\": false} ]"
     )
     @PostMapping(consumes = {"multipart/form-data"})
     public RspTemplate<StoreResponseDto> createStore(

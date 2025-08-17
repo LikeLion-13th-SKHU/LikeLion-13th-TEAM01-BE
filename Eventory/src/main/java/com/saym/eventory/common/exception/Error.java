@@ -17,6 +17,7 @@ public enum Error {
     AI_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 AI 정보를 찾을 수 없습니다."),
     STORE_NOT_FOUND(HttpStatus.NOT_FOUND, "가게를 찾을 수 없습니다."),
     MENU_NOT_FOUND(HttpStatus.NOT_FOUND, "메뉴를 찾을 수 없습니다."),
+    REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "리뷰가 없습니다."),
 
     // 400 BAD REQUEST EXCEPTION
     BAD_REQUEST_ID(HttpStatus.BAD_REQUEST, "잘못된 id값입니다."),

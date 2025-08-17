@@ -22,6 +22,7 @@ public class Menu {
     private Store store;
 
     private String menuName;
+
     private int price;
 
     private boolean isSignature; // 시그니처 메뉴 여부
