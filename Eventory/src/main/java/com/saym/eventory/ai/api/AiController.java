@@ -1,6 +1,7 @@
 package com.saym.eventory.ai.api;
 
 import com.saym.eventory.ai.api.dto.request.AiRequestDto;
+import com.saym.eventory.ai.api.dto.response.AiAllRecordResponseDto;
 import com.saym.eventory.ai.api.dto.response.AiAnalyzeResponseDto;
 import com.saym.eventory.ai.api.dto.response.AiChatResponseDto;
 import com.saym.eventory.ai.api.dto.response.AiResultResponseDto;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.security.Principal;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/ai")
@@ -46,5 +48,14 @@ public class AiController {
     @GetMapping("/chat-record/{aiId}")
     public AiChatResponseDto getChatInfo(@PathVariable Long aiId) throws Exception {
         return aiService.getChatInfo(aiId);
+    }
+
+    @Operation(
+            summary = "AI 분석 기록 전체 조회",
+            description = "로그인된 사용자의 AI 분석 기록 전체 목록을 조회합니다. <br> **최신순으로 조회**"
+    )
+    @GetMapping("/all-record")
+    public List<AiAllRecordResponseDto> getAllAiRecords(Principal principal) {
+        return aiService.getAllAiRecords(principal);
     }
 }

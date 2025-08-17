@@ -2,6 +2,7 @@ package com.saym.eventory.ai.application;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.saym.eventory.ai.api.dto.request.AiRequestDto;
+import com.saym.eventory.ai.api.dto.response.AiAllRecordResponseDto;
 import com.saym.eventory.ai.api.dto.response.AiAnalyzeResponseDto;
 import com.saym.eventory.ai.api.dto.response.AiChatResponseDto;
 import com.saym.eventory.ai.api.dto.response.AiResultResponseDto;
@@ -21,6 +22,7 @@ import org.springframework.web.client.RestTemplate;
 import java.security.Principal;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -115,5 +117,21 @@ public class AiService {
                 slogans,
                 userEvaluation
         );
+    }
+
+    public List<AiAllRecordResponseDto> getAllAiRecords(Principal principal) {
+        Long memberId = Long.parseLong(principal.getName());
+        Member member = getMemberById(memberId);
+
+        List<Ai> aiRecords = aiRepository.findByMemberOrderByChatDateDesc(member);
+
+        return aiRecords.stream()
+                .map(ai -> new AiAllRecordResponseDto( // 변경된 DTO 이름 사용
+                        ai.getId(),
+                        ai.getImage_url(),
+                        ai.getDescription(),
+                        ai.getChatDate()
+                ))
+                .collect(Collectors.toList());
     }
 }
