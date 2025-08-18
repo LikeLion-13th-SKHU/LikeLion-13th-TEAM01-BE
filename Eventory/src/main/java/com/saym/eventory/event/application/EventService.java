@@ -221,5 +221,4 @@ public class EventService {
                 .toList();
     }
 
-
 }

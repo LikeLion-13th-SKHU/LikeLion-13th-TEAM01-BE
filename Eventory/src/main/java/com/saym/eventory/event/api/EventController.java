@@ -163,3 +163,4 @@ public class EventController {
         return ResponseEntity.ok(eventService.getEvents(sortType));
     }
 }
+

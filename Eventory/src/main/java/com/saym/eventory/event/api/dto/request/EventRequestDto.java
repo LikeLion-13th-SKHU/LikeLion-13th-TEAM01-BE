@@ -13,3 +13,4 @@ public record EventRequestDto(
         String content,
         String address
 ) {}
+

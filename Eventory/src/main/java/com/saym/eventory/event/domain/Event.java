@@ -65,7 +65,6 @@ public class Event {
         this.member = member;
     }
 
-
     public void updateEvent(EventRequestDto eventRequestDto) {
         this.eventName = eventRequestDto.eventName();
         this.eventStartDate = eventRequestDto.eventStartDate();
