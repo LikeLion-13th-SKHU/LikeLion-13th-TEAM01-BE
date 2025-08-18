@@ -60,6 +60,9 @@ public class StoreService {
                 .phoneNumber(requestDto.phoneNumber())
                 .openTime(requestDto.openTime())
                 .closeTime(requestDto.closeTime())
+                .breakTimeStart(requestDto.breakTimeStart())
+                .breakTimeEnd(requestDto.breakTimeEnd())
+                .regularDayOffNote(requestDto.regularDayOffNote())
                 .address(requestDto.address())
                 .addressDetail(requestDto.addressDetail())
                 .parkingNote(requestDto.parkingNote())
@@ -112,6 +115,9 @@ public class StoreService {
                 requestDto.phoneNumber(),
                 requestDto.openTime(),
                 requestDto.closeTime(),
+                requestDto.breakTimeStart(),
+                requestDto.breakTimeEnd(),
+                requestDto.regularDayOffNote(),
                 requestDto.address(),
                 requestDto.addressDetail(),
                 pictureUrl,

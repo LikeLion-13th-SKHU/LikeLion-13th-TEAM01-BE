@@ -14,12 +14,19 @@ public record StoreResponseDto(
         String operatingHours,
         String address,
         String parkingNote,
-        List<MenuResponseDto> menus  // Response용 DTO로 변경
+        String breakTime,
+        String regularDayOffNote,
+        List<MenuResponseDto> menus
 ) {
     public static StoreResponseDto from(Store store) {
         String openTimeStr = store.getOpenTime().toString();
         String closeTimeStr = store.getCloseTime().toString();
         String operatingHours = openTimeStr + "~" + closeTimeStr;
+
+        String breakTime = null;
+        if (store.getBreakTimeStart() != null && store.getBreakTimeEnd() != null) {
+            breakTime = store.getBreakTimeStart().toString() + "~" + store.getBreakTimeEnd().toString();
+        }
 
         List<MenuResponseDto> menuDtos = store.getMenus().stream()
                 .map(menu -> new MenuResponseDto(
@@ -40,6 +47,8 @@ public record StoreResponseDto(
                 operatingHours,
                 store.getAddress() + " " + store.getAddressDetail(),
                 store.getParkingNote(),
+                breakTime,
+                store.getRegularDayOffNote(),
                 menuDtos
         );
     }

@@ -31,6 +31,10 @@ public class Store {
     private LocalTime openTime;
     private LocalTime closeTime;
 
+    private LocalTime breakTimeStart;
+    private LocalTime breakTimeEnd;
+    private String regularDayOffNote;
+
     private String address;
     private String addressDetail;
     private String latitude; // 위도
@@ -41,16 +45,19 @@ public class Store {
     private String parkingNote;
 
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<Menu> menus = new ArrayList<>(); // NullPointerException 방지를 위해 초기화
+    private List<Menu> menus = new ArrayList<>();
 
     @Builder
-    public Store(Member owner, String name, String phoneNumber, String pictureUrl, LocalTime openTime, LocalTime closeTime, String address, String addressDetail, String latitude, String longitude, String description, String operatingHoursNote, String parkingNote) {
+    public Store(Member owner, String name, String phoneNumber, String pictureUrl, LocalTime openTime, LocalTime closeTime, LocalTime breakTimeStart, LocalTime breakTimeEnd, String regularDayOffNote, String address, String addressDetail, String latitude, String longitude, String description, String operatingHoursNote, String parkingNote) {
         this.owner = owner;
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.pictureUrl = pictureUrl;
         this.openTime = openTime;
         this.closeTime = closeTime;
+        this.breakTimeStart = breakTimeStart;
+        this.breakTimeEnd = breakTimeEnd;
+        this.regularDayOffNote = regularDayOffNote;
         this.address = address;
         this.addressDetail = addressDetail;
         this.latitude = latitude;
@@ -60,11 +67,14 @@ public class Store {
         this.parkingNote = parkingNote;
     }
 
-    public void updateStore(String name, String phoneNumber, LocalTime openTime, LocalTime closeTime, String address, String addressDetail, String pictureUrl, String description, String operatingHoursNote, String parkingNote) {
+    public void updateStore(String name, String phoneNumber, LocalTime openTime, LocalTime closeTime, LocalTime breakTimeStart, LocalTime breakTimeEnd, String regularDayOffNote, String address, String addressDetail, String pictureUrl, String description, String operatingHoursNote, String parkingNote) {
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.openTime = openTime;
         this.closeTime = closeTime;
+        this.breakTimeStart = breakTimeStart;
+        this.breakTimeEnd = breakTimeEnd;
+        this.regularDayOffNote = regularDayOffNote;
         this.address = address;
         this.addressDetail = addressDetail;
         this.pictureUrl = pictureUrl;
