@@ -119,6 +119,12 @@ public class StoreController {
         return RspTemplate.ok(storeService.getStoreDetails(storeId));
     }
 
+    @Operation(summary = "내가 등록한 가게 정보 조회 (가맹점주만 가능)")
+    @GetMapping("/my")
+    public RspTemplate<StoreResponseDto> getMyStore(Principal principal) {
+        return RspTemplate.ok(storeService.getMyStore(principal));
+    }
+
     // 메뉴 JSON 파싱을 별도 메서드로 분리
     private List<MenuRequestDto> parseMenus(String menusJson) {
         if (menusJson == null || menusJson.isEmpty()) {

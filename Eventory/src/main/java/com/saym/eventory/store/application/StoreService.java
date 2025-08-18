@@ -164,4 +164,13 @@ public class StoreService {
                 .orElseThrow(() -> new CustomException(Error.STORE_NOT_FOUND, Error.STORE_NOT_FOUND.getMessage()));
         return StoreResponseDto.from(store);
     }
+
+    // 본인이 등록한 가게 조회
+    @Transactional(readOnly = true)
+    public StoreResponseDto getMyStore(Principal principal) {
+        Long ownerId = Long.parseLong(principal.getName());
+        Store store = storeRepository.findByOwnerId(ownerId) // 👈 소유자 ID로 가게 조회
+                .orElseThrow(() -> new CustomException(Error.STORE_NOT_FOUND, "등록된 가게가 없습니다."));
+        return StoreResponseDto.from(store);
+    }
 }
