@@ -33,7 +33,6 @@ public class EventController {
     private final EventService eventService;
     private final TokenProvider tokenProvider;
 
-
     // 행사 불러오기 (제목, 날짜, 사진)
     @GetMapping
     @Operation(method = "GET", summary = "행사 목록 조회", description = "여러 개의 행사(제목, 날짜, 사진)를 조회합니다.")

@@ -238,5 +238,4 @@ public class EventService {
                 .map(EventInfoResponseDto::from)
                 .toList();
     }
-
 }
