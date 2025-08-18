@@ -16,6 +16,9 @@ import com.saym.eventory.member.domain.Member;
 import com.saym.eventory.member.domain.UserType;
 import com.saym.eventory.member.domain.repository.MemberRepository;
 import com.saym.eventory.event.api.dto.request.EventRequestDto;
+import com.saym.eventory.store.api.dto.response.StoreResponseDto;
+import com.saym.eventory.store.domain.Store;
+import com.saym.eventory.store.domain.repository.StoreRepository;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
@@ -34,6 +37,7 @@ public class EventService {
     private final EventRepository eventRepository;
     private final BookmarkRepository bookmarkRepository;
     private final MemberRepository memberRepository;
+    private final StoreRepository storeRepository;
     private final S3Service s3Service;
 
     private Member getMemberByPrincipal(Principal principal) {
@@ -68,6 +72,20 @@ public class EventService {
                         event.getAddress()
                 ))
                 .orElseThrow(() -> new RuntimeException("행사를 찾을 수 없습니다."));
+    }
+
+    // 같은 지역 가게 추천
+    public List<StoreResponseDto> getRecommendedStores(Long eventId) {
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new EntityNotFoundException("행사를 찾을 수 없습니다."));
+
+        String areaName = event.getArea().getName();
+
+        List<Store> stores = storeRepository.findByAddressContains(areaName);
+
+        return stores.stream()
+                .map(StoreResponseDto::from)
+                .toList();
     }
 
     // 북마크 추가
@@ -220,5 +238,4 @@ public class EventService {
                 .map(EventInfoResponseDto::from)
                 .toList();
     }
-
 }
