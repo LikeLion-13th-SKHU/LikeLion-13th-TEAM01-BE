@@ -9,6 +9,7 @@ import com.saym.eventory.event.domain.Area;
 import com.saym.eventory.event.domain.Event;
 import com.saym.eventory.event.domain.EventSortType;
 import com.saym.eventory.global.token.TokenProvider;
+import com.saym.eventory.store.api.dto.response.StoreResponseDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
@@ -61,6 +62,13 @@ public class EventController {
         );
 
         return ResponseEntity.ok(response);
+    }
+
+    // 같은 지역 가게 추천
+    @GetMapping("/detail/store/{eventId}")
+    @Operation(method = "GET", summary = "같은 지역 가게 추천")
+    public ResponseEntity<List<StoreResponseDto>> getRecommendedStores(@PathVariable Long eventId) {
+        return ResponseEntity.ok(eventService.getRecommendedStores(eventId));
     }
 
     // 북마크에 행사 저장
