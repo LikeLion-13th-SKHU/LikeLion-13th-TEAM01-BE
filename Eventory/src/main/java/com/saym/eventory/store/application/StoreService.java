@@ -60,6 +60,9 @@ public class StoreService {
                 .phoneNumber(requestDto.phoneNumber())
                 .openTime(requestDto.openTime())
                 .closeTime(requestDto.closeTime())
+                .breakTimeStart(requestDto.breakTimeStart())
+                .breakTimeEnd(requestDto.breakTimeEnd())
+                .regularDayOffNote(requestDto.regularDayOffNote())
                 .address(requestDto.address())
                 .addressDetail(requestDto.addressDetail())
                 .parkingNote(requestDto.parkingNote())
@@ -112,6 +115,9 @@ public class StoreService {
                 requestDto.phoneNumber(),
                 requestDto.openTime(),
                 requestDto.closeTime(),
+                requestDto.breakTimeStart(),
+                requestDto.breakTimeEnd(),
+                requestDto.regularDayOffNote(),
                 requestDto.address(),
                 requestDto.addressDetail(),
                 pictureUrl,
@@ -162,6 +168,15 @@ public class StoreService {
     public StoreResponseDto getStoreDetails(Long storeId) {
         Store store = storeRepository.findById(storeId)
                 .orElseThrow(() -> new CustomException(Error.STORE_NOT_FOUND, Error.STORE_NOT_FOUND.getMessage()));
+        return StoreResponseDto.from(store);
+    }
+
+    // 본인이 등록한 가게 조회
+    @Transactional(readOnly = true)
+    public StoreResponseDto getMyStore(Principal principal) {
+        Long ownerId = Long.parseLong(principal.getName());
+        Store store = storeRepository.findByOwnerId(ownerId) // 👈 소유자 ID로 가게 조회
+                .orElseThrow(() -> new CustomException(Error.STORE_NOT_FOUND, "등록된 가게가 없습니다."));
         return StoreResponseDto.from(store);
     }
 }

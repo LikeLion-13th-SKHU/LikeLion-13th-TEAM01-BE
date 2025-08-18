@@ -19,6 +19,15 @@ public record StoreRequestDto(
         @Schema(description = "마감 시간 (HH:mm, 24시간 기준)", example = "21:00")
         LocalTime closeTime,
 
+        @Schema(description = "브레이크 타임 시작 시간", example = "15:00", nullable = true)
+        LocalTime breakTimeStart,
+
+        @Schema(description = "브레이크 타임 종료 시간", example = "18:00", nullable = true)
+        LocalTime breakTimeEnd,
+
+        @Schema(description = "정기 휴일 안내 문구", example = "매주 월요일 휴무", nullable = true)
+        String regularDayOffNote,
+
         @Schema(description = "주소", example = "서울시 강남구 ...")
         String address,
 
