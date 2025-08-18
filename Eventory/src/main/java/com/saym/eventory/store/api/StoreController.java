@@ -30,10 +30,12 @@ public class StoreController {
     @Operation(
             summary = "가게 등록 (가맹점주만 가능)",
             description = "**Responses 의 data 속 id 가 storeId 입니다.** <br>"
-                    + "메뉴를 제외한 모든 필드는 필수 입력입니다. <br>" +
-                    "전화번호는 '-' 포함 ex) 02-123-4567 (021234567도 가능하지만 안 예뻐서..)<br>" +
+                    + "메뉴와 쿠폰을 제외한 모든 필드는 필수 입력입니다. <br>" +
+                    "전화번호는 '-' 포함 ex) 02-123-4567 <br>" +
                     "오픈/마감 시간은 HH:mm 형식 (24시간 기준)으로 작성해주세요. <br>" +
-                    "대표 이미지는 필수 입니다. <br> 메뉴 정보는 JSON 배열로 전달 가능합니다. <br> ex) [ {\"menuName\": \"에그마요 샌드위치\", \"price\": 6500, \"isSignature\": true}, {\"menuName\": \"햄치즈 샌드위치\", \"price\": 7000, \"isSignature\": false} ]"
+                    "브레이크 타임은 HH:mm 형식 (24시간 기준)으로 시작/종료 시간 입력 가능합니다. (선택 사항) <br>" +
+                    "정기 휴일은 자유롭게 텍스트로 입력 가능합니다. (선택 사항) <br>" +
+                    "대표 이미지는 필수 입니다. <br> 메뉴 및 쿠폰 정보는 JSON 배열로 전달 가능합니다. <br> ex) [ {\"menuName\": \"에그마요 샌드위치\", \"price\": 6500, \"isSignature\": true}, {\"menuName\": \"햄치즈 샌드위치\", \"price\": 7000, \"isSignature\": false} ]"
     )
     @PostMapping(consumes = {"multipart/form-data"})
     public RspTemplate<StoreResponseDto> createStore(
@@ -42,6 +44,9 @@ public class StoreController {
             @RequestPart("phoneNumber") String phoneNumber,
             @RequestPart("openTime") String openTime,
             @RequestPart("closeTime") String closeTime,
+            @RequestPart(value = "breakTimeStart", required = false) String breakTimeStart,
+            @RequestPart(value = "breakTimeEnd", required = false) String breakTimeEnd,
+            @RequestPart(value = "regularDayOffNote", required = false) String regularDayOffNote,
             @RequestPart("address") String address,
             @RequestPart("addressDetail") String addressDetail,
             @RequestPart("parkingNote") String parkingNote,
@@ -55,6 +60,9 @@ public class StoreController {
                 phoneNumber,
                 LocalTime.parse(openTime),
                 LocalTime.parse(closeTime),
+                breakTimeStart != null ? LocalTime.parse(breakTimeStart) : null,
+                breakTimeEnd != null ? LocalTime.parse(breakTimeEnd) : null,
+                regularDayOffNote,
                 address,
                 addressDetail,
                 parkingNote,
@@ -67,13 +75,12 @@ public class StoreController {
 
     @Operation(
             summary = "가게 정보 수정 (가맹점주만 가능)",
-            description = "메뉴를 제외한 모든 필드는 필수 입력입니다. <br>" +
+            description = "**메뉴와 쿠폰을 제외한 모든 필드는 필수 입력입니다.** <br>" +
                     "전화번호는 '-' 포함 (ex: 02-123-4567), <br>" +
                     "오픈/마감 시간은 HH:mm 형식 (24시간 기준)으로 작성해주세요. <br>" +
-                    "대표 이미지는 필수 입니다. <br> 메뉴 정보는 JSON 배열로 전달 가능합니다. <br> ex) [ <br>" +
-                    "{\"menuName\": \"에그마요 샌드위치\", \"price\": 6500, \"isSignature\": true}, <br>" +
-                    "{\"menuName\": \"햄치즈 샌드위치\", \"price\": 7000, \"isSignature\": false} <br>" +
-                    "]"
+                    "브레이크 타임은 HH:mm 형식 (24시간 기준)으로 시작/종료 시간 입력 가능합니다. (선택 사항, 필수 입력 X) <br>" +
+                    "정기 휴일은 자유롭게 텍스트로 입력 가능합니다. (선택 사항, 필수 입력 X) <br>" +
+                    "대표 이미지는 필수 입니다. <br> 메뉴 및 쿠폰 정보는 JSON 배열로 전달 가능합니다. <br> ex) [ {\"menuName\": \"에그마요 샌드위치\", \"price\": 6500, \"isSignature\": true}, {\"menuName\": \"햄치즈 샌드위치\", \"price\": 7000, \"isSignature\": false} ]"
     )
     @PatchMapping(value = "/{storeId}", consumes = {"multipart/form-data"})
     public RspTemplate<StoreResponseDto> updateStore(
@@ -83,6 +90,9 @@ public class StoreController {
             @RequestPart("phoneNumber") String phoneNumber,
             @RequestPart("openTime") String openTime,
             @RequestPart("closeTime") String closeTime,
+            @RequestPart(value = "breakTimeStart", required = false) String breakTimeStart,
+            @RequestPart(value = "breakTimeEnd", required = false) String breakTimeEnd,
+            @RequestPart(value = "regularDayOffNote", required = false) String regularDayOffNote,
             @RequestPart("address") String address,
             @RequestPart("addressDetail") String addressDetail,
             @RequestPart("parkingNote") String parkingNote,
@@ -96,6 +106,9 @@ public class StoreController {
                 phoneNumber,
                 LocalTime.parse(openTime),
                 LocalTime.parse(closeTime),
+                breakTimeStart != null ? LocalTime.parse(breakTimeStart) : null,
+                breakTimeEnd != null ? LocalTime.parse(breakTimeEnd) : null,
+                regularDayOffNote,
                 address,
                 addressDetail,
                 parkingNote,
@@ -117,6 +130,12 @@ public class StoreController {
     @GetMapping("/{storeId}")
     public RspTemplate<StoreResponseDto> getStoreDetails(@PathVariable Long storeId) {
         return RspTemplate.ok(storeService.getStoreDetails(storeId));
+    }
+
+    @Operation(summary = "내가 등록한 가게 정보 조회 (가맹점주만 가능)")
+    @GetMapping("/my")
+    public RspTemplate<StoreResponseDto> getMyStore(Principal principal) {
+        return RspTemplate.ok(storeService.getMyStore(principal));
     }
 
     // 메뉴 JSON 파싱을 별도 메서드로 분리
