@@ -15,6 +15,9 @@ public enum Error {
     NOT_FOUND_COMMUNITY(HttpStatus.NOT_FOUND, "존재하지 않는 커뮤니티 글입니다."),
     MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "회원을 찾을 수 없습니다."),
     AI_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 AI 정보를 찾을 수 없습니다."),
+    STORE_NOT_FOUND(HttpStatus.NOT_FOUND, "가게를 찾을 수 없습니다."),
+    MENU_NOT_FOUND(HttpStatus.NOT_FOUND, "메뉴를 찾을 수 없습니다."),
+    REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "리뷰가 없습니다."),
 
     // 400 BAD REQUEST EXCEPTION
     BAD_REQUEST_ID(HttpStatus.BAD_REQUEST, "잘못된 id값입니다."),
@@ -25,6 +28,8 @@ public enum Error {
     EXIST_USER(HttpStatus.BAD_REQUEST, "이미 가입한 유저입니다."),
     INVALID_REFRESH_TOKEN(HttpStatus.BAD_REQUEST, "유효하지 않은 리프레시 토큰입니다."),
     BUSINESS_LICENSE_REQUIRED(HttpStatus.BAD_REQUEST, "사업자등록증 이미지는 필수입니다."),
+    STORE_ALREADY_EXISTS(HttpStatus.BAD_REQUEST, "이미 가게를 등록했습니다."),
+    PICTURE_REQUIRED(HttpStatus.BAD_REQUEST, "가게 대표 이미지는 필수입니다."),
 
     // 401 UNAUTHORIZED EXCEPTION
     TOKEN_TIME_EXPIRED_EXCEPTION(HttpStatus.UNAUTHORIZED, "만료된 토큰입니다."),
@@ -38,6 +43,7 @@ public enum Error {
     UNAUTHORIZED_ACCESS(HttpStatus.FORBIDDEN,"리소스에 접근할 수 없는 유저입니다. 토큰을 확인해주세요."),
     NO_INSTRUCTOR(HttpStatus.FORBIDDEN, "강사정보가 없는 유저입니다."),
     INVALID_USER_ACCESS(HttpStatus.FORBIDDEN, "접근 권한이 없는 유저입니다."),
+    RESOURCE_NOT_OWNED(HttpStatus.FORBIDDEN, "본인이 등록한 행사만 수정/삭제할 수 있습니다."),
 
     // 422 UNPROCESSABLE_ENTITY
     UNPROCESSABLE_ENTITY_DELETE_EXCEPTION(HttpStatus.UNPROCESSABLE_ENTITY, "서버에서 요청을 이해해 삭제하려는 도중 문제가 생겼습니다."),
