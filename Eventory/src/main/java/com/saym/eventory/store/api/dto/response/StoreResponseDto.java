@@ -16,7 +16,8 @@ public record StoreResponseDto(
         String parkingNote,
         String breakTime,
         String regularDayOffNote,
-        List<MenuResponseDto> menus
+        List<MenuResponseDto> menus,
+        String couponName
 ) {
     public static StoreResponseDto from(Store store) {
         String openTimeStr = store.getOpenTime().toString();
@@ -49,7 +50,8 @@ public record StoreResponseDto(
                 store.getParkingNote(),
                 breakTime,
                 store.getRegularDayOffNote(),
-                menuDtos
+                menuDtos,
+                store.getCouponName()
         );
     }
 }
