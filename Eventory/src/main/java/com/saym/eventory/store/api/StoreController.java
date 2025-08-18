@@ -101,7 +101,7 @@ public class StoreController {
                 parkingNote,
                 menus,
                 pictureFile
-                );
+        );
 
         return RspTemplate.ok(storeService.updateStore(principal, storeId, requestDto));
     }
@@ -125,7 +125,8 @@ public class StoreController {
             return null;
         }
         try {
-            return objectMapper.readValue(menusJson, new TypeReference<List<MenuRequestDto>>() {});
+            return objectMapper.readValue(menusJson, new TypeReference<List<MenuRequestDto>>() {
+            });
         } catch (IOException e) {
             throw new RuntimeException("메뉴 정보 파싱에 실패했습니다.", e);
         }
