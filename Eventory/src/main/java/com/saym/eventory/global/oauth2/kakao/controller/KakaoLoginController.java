@@ -22,6 +22,7 @@ public class KakaoLoginController {
 
     private final AuthService authService;
 
+
     // 소셜 로그인 회원가입 및 로그인
     @GetMapping
     @Operation(method = "GET", summary = "카카오 로그인 회원가입 및 로그인", description = "소셜 로그인을 진행해 회원가입 및 로그인을 진행합니다. 여기서 반환되는 토큰과 사용자 정보를 바탕으로 프론트엔드에서 다음 화면을 결정합니다.")
