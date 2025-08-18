@@ -4,6 +4,7 @@ import com.saym.eventory.common.exception.CustomException;
 import com.saym.eventory.common.exception.Error;
 import com.saym.eventory.global.oauth2.kakao.domain.LoginResult;
 import com.saym.eventory.global.oauth2.kakao.domain.RefreshToken;
+import com.saym.eventory.global.oauth2.kakao.dto.AuthResponseDto;
 import com.saym.eventory.global.oauth2.kakao.dto.TokenDto;
 import com.saym.eventory.global.token.TokenProvider;
 import com.saym.eventory.member.application.MemberService;
@@ -24,22 +25,31 @@ public class AuthService {
 
 
     @Transactional
-    public TokenDto signUpOrSignIn(String authorizationCode) {
+    public AuthResponseDto signUpOrSignIn(String authorizationCode) {
         LoginResult result = null;
 
         String accessToken = kakaoService.getAccessToken(authorizationCode);
         result = kakaoService.loginOrSignUp(accessToken);
 
-        if (result == null) {
+        if (result == null || result.member() == null) {
             throw new CustomException(Error.NOT_FOUND_USER_EXCEPTION, Error.NOT_FOUND_USER_EXCEPTION.getMessage());
         }
 
-        TokenDto tokenDto = tokenProvider.createToken(result.member());
+        Member member = result.member();
+        TokenDto tokenDto = tokenProvider.createToken(member);
+
         if (tokenDto == null) {
             throw new CustomException(Error.JWT_CREATION_EXCEPTION, Error.JWT_CREATION_EXCEPTION.getMessage());
         }
 
-        return tokenDto;
+        return AuthResponseDto.builder()
+                .accessToken(tokenDto.accessToken())
+                .refreshToken(tokenDto.refreshToken())
+                .email(member.getEmail())
+                .name(member.getName())
+                .userType(member.getUserType())
+                .approvalStatus(member.getApprovalStatus())
+                .build();
     }
 
     @Transactional
