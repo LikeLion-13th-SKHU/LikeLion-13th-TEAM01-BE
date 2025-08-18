@@ -67,6 +67,7 @@ public class StoreService {
                 .addressDetail(requestDto.addressDetail())
                 .parkingNote(requestDto.parkingNote())
                 .pictureUrl(pictureUrl)
+                .couponName(requestDto.couponName()) // 쿠폰 이름 전달
                 .build();
 
         // 메뉴 저장
@@ -123,7 +124,8 @@ public class StoreService {
                 pictureUrl,
                 store.getDescription(),
                 store.getOperatingHoursNote(),
-                requestDto.parkingNote()
+                requestDto.parkingNote(),
+                requestDto.couponName()
         );
 
         // 기존 메뉴 삭제 후 새 메뉴 저장
@@ -175,7 +177,7 @@ public class StoreService {
     @Transactional(readOnly = true)
     public StoreResponseDto getMyStore(Principal principal) {
         Long ownerId = Long.parseLong(principal.getName());
-        Store store = storeRepository.findByOwnerId(ownerId) // 👈 소유자 ID로 가게 조회
+        Store store = storeRepository.findByOwnerId(ownerId)
                 .orElseThrow(() -> new CustomException(Error.STORE_NOT_FOUND, "등록된 가게가 없습니다."));
         return StoreResponseDto.from(store);
     }

@@ -40,7 +40,9 @@ public record StoreRequestDto(
         @Schema(description = "메뉴 목록")
         List<MenuRequestDto> menus,
 
+        @Schema(description = "쿠폰 이름", example = "5000원 할인 쿠폰", nullable = true)
+        String couponName,
+
         @Schema(description = "대표 이미지 파일")
         MultipartFile pictureFile
-
 ) {}
