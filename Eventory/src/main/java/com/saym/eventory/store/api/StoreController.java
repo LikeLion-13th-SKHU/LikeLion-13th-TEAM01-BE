@@ -35,7 +35,7 @@ public class StoreController {
                     "오픈/마감 시간은 HH:mm 형식 (24시간 기준)으로 작성해주세요. <br>" +
                     "브레이크 타임은 HH:mm 형식 (24시간 기준)으로 시작/종료 시간 입력 가능합니다. (선택 사항) <br>" +
                     "정기 휴일은 자유롭게 텍스트로 입력 가능합니다. (선택 사항) <br>" +
-                    "대표 이미지는 필수 입니다. <br> 메뉴 및 쿠폰 정보는 JSON 배열로 전달 가능합니다. <br> ex) [ {\"menuName\": \"에그마요 샌드위치\", \"price\": 6500, \"isSignature\": true}, {\"menuName\": \"햄치즈 샌드위치\", \"price\": 7000, \"isSignature\": false} ]"
+                    "대표 이미지는 필수 입니다. <br> 메뉴 정보는 JSON 배열로 전달 가능하며, 쿠폰은 텍스트로 입력 가능합니다. <br> ex) 메뉴: [ {\"menuName\": \"에그마요 샌드위치\", \"price\": 6500, \"isSignature\": true} ], <br> 쿠폰: \"5000원 할인 쿠폰\""
     )
     @PostMapping(consumes = {"multipart/form-data"})
     public RspTemplate<StoreResponseDto> createStore(
@@ -51,7 +51,8 @@ public class StoreController {
             @RequestPart("addressDetail") String addressDetail,
             @RequestPart("parkingNote") String parkingNote,
             @RequestPart(value = "pictureFile", required = false) MultipartFile pictureFile,
-            @RequestPart(value = "menus", required = false) String menusJson
+            @RequestPart(value = "menus", required = false) String menusJson,
+            @RequestPart(value = "couponName", required = false) String couponName
     ) {
         List<MenuRequestDto> menus = parseMenus(menusJson);
 
@@ -67,6 +68,7 @@ public class StoreController {
                 addressDetail,
                 parkingNote,
                 menus,
+                couponName,
                 pictureFile
         );
 
@@ -74,13 +76,14 @@ public class StoreController {
     }
 
     @Operation(
-            summary = "가게 정보 수정 (가맹점주만 가능)",
-            description = "**메뉴와 쿠폰을 제외한 모든 필드는 필수 입력입니다.** <br>" +
-                    "전화번호는 '-' 포함 (ex: 02-123-4567), <br>" +
+            summary = "가게 수정 (가맹점주만 가능)",
+            description = "**Responses 의 data 속 id 가 storeId 입니다.** <br>"
+                    + "메뉴와 쿠폰을 제외한 모든 필드는 필수 입력입니다. <br>" +
+                    "전화번호는 '-' 포함 ex) 02-123-4567 <br>" +
                     "오픈/마감 시간은 HH:mm 형식 (24시간 기준)으로 작성해주세요. <br>" +
-                    "브레이크 타임은 HH:mm 형식 (24시간 기준)으로 시작/종료 시간 입력 가능합니다. (선택 사항, 필수 입력 X) <br>" +
-                    "정기 휴일은 자유롭게 텍스트로 입력 가능합니다. (선택 사항, 필수 입력 X) <br>" +
-                    "대표 이미지는 필수 입니다. <br> 메뉴 및 쿠폰 정보는 JSON 배열로 전달 가능합니다. <br> ex) [ {\"menuName\": \"에그마요 샌드위치\", \"price\": 6500, \"isSignature\": true}, {\"menuName\": \"햄치즈 샌드위치\", \"price\": 7000, \"isSignature\": false} ]"
+                    "브레이크 타임은 HH:mm 형식 (24시간 기준)으로 시작/종료 시간 입력 가능합니다. (선택 사항) <br>" +
+                    "정기 휴일은 자유롭게 텍스트로 입력 가능합니다. (선택 사항) <br>" +
+                    "대표 이미지는 필수 입니다. <br> 메뉴 정보는 JSON 배열로 전달 가능하며, 쿠폰은 텍스트로 입력 가능합니다. <br> ex) 메뉴: [ {\"menuName\": \"에그마요 샌드위치\", \"price\": 6500, \"isSignature\": true} ], <br> 쿠폰: \"5000원 할인 쿠폰\""
     )
     @PatchMapping(value = "/{storeId}", consumes = {"multipart/form-data"})
     public RspTemplate<StoreResponseDto> updateStore(
@@ -97,7 +100,8 @@ public class StoreController {
             @RequestPart("addressDetail") String addressDetail,
             @RequestPart("parkingNote") String parkingNote,
             @RequestPart(value = "pictureFile", required = false) MultipartFile pictureFile,
-            @RequestPart(value = "menus", required = false) String menusJson
+            @RequestPart(value = "menus", required = false) String menusJson,
+            @RequestPart(value = "couponName", required = false) String couponName
     ) {
         List<MenuRequestDto> menus = parseMenus(menusJson);
 
@@ -113,8 +117,9 @@ public class StoreController {
                 addressDetail,
                 parkingNote,
                 menus,
+                couponName,
                 pictureFile
-                );
+        );
 
         return RspTemplate.ok(storeService.updateStore(principal, storeId, requestDto));
     }
@@ -138,7 +143,7 @@ public class StoreController {
         return RspTemplate.ok(storeService.getMyStore(principal));
     }
 
-    // 메뉴 JSON 파싱을 별도 메서드로 분리
+    // 메뉴 JSON 파싱 메서드는 유지
     private List<MenuRequestDto> parseMenus(String menusJson) {
         if (menusJson == null || menusJson.isEmpty()) {
             return null;

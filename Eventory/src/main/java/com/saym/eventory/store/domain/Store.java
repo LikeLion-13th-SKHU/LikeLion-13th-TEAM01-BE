@@ -44,11 +44,13 @@ public class Store {
     private String operatingHoursNote;
     private String parkingNote;
 
+    private String couponName;
+
     @OneToMany(mappedBy = "store", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Menu> menus = new ArrayList<>();
 
     @Builder
-    public Store(Member owner, String name, String phoneNumber, String pictureUrl, LocalTime openTime, LocalTime closeTime, LocalTime breakTimeStart, LocalTime breakTimeEnd, String regularDayOffNote, String address, String addressDetail, String latitude, String longitude, String description, String operatingHoursNote, String parkingNote) {
+    public Store(Member owner, String name, String phoneNumber, String pictureUrl, LocalTime openTime, LocalTime closeTime, LocalTime breakTimeStart, LocalTime breakTimeEnd, String regularDayOffNote, String address, String addressDetail, String latitude, String longitude, String description, String operatingHoursNote, String parkingNote, String couponName) {
         this.owner = owner;
         this.name = name;
         this.phoneNumber = phoneNumber;
@@ -65,9 +67,10 @@ public class Store {
         this.description = description;
         this.operatingHoursNote = operatingHoursNote;
         this.parkingNote = parkingNote;
+        this.couponName = couponName;
     }
 
-    public void updateStore(String name, String phoneNumber, LocalTime openTime, LocalTime closeTime, LocalTime breakTimeStart, LocalTime breakTimeEnd, String regularDayOffNote, String address, String addressDetail, String pictureUrl, String description, String operatingHoursNote, String parkingNote) {
+    public void updateStore(String name, String phoneNumber, LocalTime openTime, LocalTime closeTime, LocalTime breakTimeStart, LocalTime breakTimeEnd, String regularDayOffNote, String address, String addressDetail, String pictureUrl, String description, String operatingHoursNote, String parkingNote, String couponName) {
         this.name = name;
         this.phoneNumber = phoneNumber;
         this.openTime = openTime;
@@ -81,5 +84,6 @@ public class Store {
         this.description = description;
         this.operatingHoursNote = operatingHoursNote;
         this.parkingNote = parkingNote;
+        this.couponName = couponName;
     }
 }
