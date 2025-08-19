@@ -92,6 +92,22 @@ public class EventController {
         return ResponseEntity.ok(response);
     }
 
+    @DeleteMapping("/bookmark/{eventId}")
+    @Operation(method = "DELETE", summary = "행사 북마크 삭제")
+    public ResponseEntity<RspTemplate<Void>> deleteBookmark(@PathVariable Long eventId, HttpServletRequest request) {
+        String token = tokenProvider.resolveToken(request);
+        String memberIdStr = tokenProvider.getAuthentication(token).getName();
+        Long memberId = Long.parseLong(memberIdStr);
+        eventService.deleteBookmark(memberId, eventId);
+
+        RspTemplate<Void> response = RspTemplate.success(
+                HttpStatus.OK,
+                "북마크 삭제 성공",
+                null
+        );
+        return ResponseEntity.ok(response);
+    }
+
     // 북마크 목록 조회
     @GetMapping("/bookmark")
     @Operation(method = "GET", summary = "북마크 목록 조회", description = "회원이 북마크한 행사 목록을 조회합니다.")

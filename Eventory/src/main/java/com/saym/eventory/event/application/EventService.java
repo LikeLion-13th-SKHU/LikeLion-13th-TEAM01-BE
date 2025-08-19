@@ -104,6 +104,19 @@ public class EventService {
         bookmarkRepository.save(bookmark);
     }
 
+    @Transactional
+    public void deleteBookmark(Long memberId, Long eventId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new IllegalArgumentException("회원을 찾을 수 없습니다."));
+        Event event = eventRepository.findById(eventId)
+                .orElseThrow(() -> new IllegalArgumentException("행사를 찾을 수 없습니다."));
+
+        Bookmark bookmark = bookmarkRepository.findByMemberAndEvent(member, event)
+                .orElseThrow(() -> new IllegalStateException("북마크가 존재하지 않습니다."));
+
+        bookmarkRepository.delete(bookmark);
+    }
+
     // 북마크 리스트 조회
     public List<EventInfoResponseDto> getBookmarks(Long memberId) {
         Member member = memberRepository.findById(memberId)
