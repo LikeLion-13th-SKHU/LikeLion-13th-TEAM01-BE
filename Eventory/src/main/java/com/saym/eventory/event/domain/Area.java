@@ -16,12 +16,12 @@ public enum Area {
     SEJONG("세종"),
     GYEONGGI("경기"),
     GANGWON("강원"),
-    CHUNGBUK("충북"),
-    CHUNGNAM("충남"),
-    JEONBUK("전북"),
-    JEONNAM("전남"),
-    GYEONGBUK("경북"),
-    GYEONGNAM("경남"),
+    CHUNGBUK("충청북도"),
+    CHUNGNAM("충청남도"),
+    JEONBUK("전라북도"),
+    JEONNAM("전라남도"),
+    GYEONGBUK("경상북도"),
+    GYEONGNAM("경상남도"),
     JEJU("제주");
 
     private final String name; // 한글명
